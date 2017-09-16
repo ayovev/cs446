@@ -1,6 +1,6 @@
 CXX = g++
-SRCFILE = main.cpp
+SRCFILES = main.cpp functions.cpp
 CXXFLAGS = -std=c++11 -Wall -Wextra -g -O0 -o Sim01
 
 all:
-	$(CXX) $(SRCFILE) $(CXXFLAGS)
+	$(CXX) $(SRCFILES) $(CXXFLAGS)
