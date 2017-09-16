@@ -7,10 +7,14 @@
 
 using namespace std;
 
+const int MONITOR = 0;
+const int OUTPUT_FILE = 1;
+const int MONITOR_AND_OUTPUT_FILE = 2;
 const char SPACE = ' ';
 const char NEWLINE = '\n';
 const char LEFT_PARENTHESE = '(';
 const char RIGHT_PARENTHESE = ')';
+const char HYPHEN = '-';
 
 void getMetadataFilepath(ifstream& fin, string& mdfp);
 void getComponentCycleTimes(ifstream& fin, map<string, int>& cycleTimes);
@@ -20,7 +24,7 @@ void readConfigurationFile(ifstream& fin, map<string, int>& cycleTimes,
 void readOneMeta(ifstream& fin, vector<char>& mdc, vector<string>& mdd, 
                  vector<int>& cycles);
 void readMetadataFile(ifstream& fin, vector<char>& mdc, vector<string>& mdd, 
-                      vector<int>& cycles);
+                      vector<int>& cycles, int& count);
 
 int main(int argc, const char *argv[])
 {
@@ -32,6 +36,8 @@ int main(int argc, const char *argv[])
    vector<char> metadataCodes;
    vector<string> metadataDescriptors;
    vector<int> metadataCycles;
+   int count = 0;
+   int logType = 2; // test value
    
    // clear and open file stream
    fin.clear();
@@ -46,22 +52,58 @@ int main(int argc, const char *argv[])
    
    // clear and open file stream
    fin.clear();
-   fin.open(metadataFilepath);
+   fin.open(metadataFilepath.c_str());
    
-   readMetadataFile(fin, metadataCodes, metadataDescriptors, metadataCycles);
+   readMetadataFile(fin, metadataCodes, metadataDescriptors, metadataCycles, count);
       
    // close file stream
    fin.close();
    
 ////////////////////////////////////////////////////////////////////////////////
 
-   fout.clear();
-   fout.open(logFilepath);
+   // fout.clear();
+   // logFilepath = "output/output.out";
+   // fout.open(logFilepath);
+   // 
+   // fout << "Configuration File Data" << endl;
+   // 
+   // 
+   // fout.close();
    
+   cout << endl << endl;
    
+   cout << "Configuration File Data" << endl;   
+   for(auto& x : cycleTimes)
+   {
+      cout << x.first << " = " << x.second << " ms / cycle" << endl;
+   }
    
+   cout << "Logged to: ";
    
-   fout.close()
+   if(logType == MONITOR)
+   {
+      cout << "monitor" << endl << endl;
+   }
+   else if(logType == OUTPUT_FILE)
+   {
+      cout << logFilepath << endl << endl;
+   }
+   else if(logType == MONITOR_AND_OUTPUT_FILE)
+   {
+      cout << "monitor and " << logFilepath << endl << endl;
+   }
+   
+   string temp;
+   
+   cout << "Meta-Data Metrics" << endl;
+   for(int index = 2; index < count - 2; index++)
+   {      
+      cout << metadataCodes[index] << LEFT_PARENTHESE
+           << metadataDescriptors[index] << RIGHT_PARENTHESE
+           << metadataCycles[index] << SPACE << HYPHEN << SPACE
+           << metadataCycles[index] * cycleTimes[temp] << endl;
+   }
+   
    
    
    
@@ -171,12 +213,12 @@ void readOneMeta(ifstream& fin, vector<char>& mdc, vector<string>& mdd,
 }
 
 void readMetadataFile(ifstream& fin, vector<char>& mdc, vector<string>& mdd, 
-                      vector<int>& cycles)
+                      vector<int>& cycles, int& count)
 {
    fin.ignore(256, NEWLINE);
    
-   char c;   
-   int count = 0;
+   char c;
+   count = 0;
    
    while(c != '.')
    {
