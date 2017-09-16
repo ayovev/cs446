@@ -3,6 +3,7 @@
 #include<fstream>
 #include<string>
 #include<map>
+#include<vector>
 
 using namespace std;
 
@@ -13,6 +14,8 @@ void getComponentCycleTimes(ifstream& fin, map<string, int>& cycleTimes);
 void getLogFilepath(ifstream& fin, string& lfp);
 void readConfigurationFile(ifstream& fin, map<string, int>& cycleTimes,
                            string& mdfp, string& lfp);
+void readOneMeta(ifstream& fin, vector<char>& mdc, vector<string>& mdd, 
+                 vector<int>& cycles);
 
 int main(int argc, const char *argv[])
 {
@@ -20,6 +23,9 @@ int main(int argc, const char *argv[])
    ifstream fin;
    string metadataFilepath, logFilepath;
    map<string, int> cycleTimes;
+   vector<char> metadataCodes;
+   vector<string> metadataDescriptors;
+   vector<int> metadataCycles;
    
    // clear and open file stream
    fin.clear();
@@ -38,11 +44,8 @@ int main(int argc, const char *argv[])
    
    fin.ignore(256, '\n');
    
-   string s;
-   
-   fin >> s;
-   cout << s << endl;
-   
+   readOneMeta(fin, metadataCodes, metadataDescriptors, metadataCycles);
+      
    // close file stream
    fin.close();
    
@@ -121,4 +124,33 @@ void readConfigurationFile(ifstream& fin, map<string, int>& cycleTimes,
    getLogFilepath(fin, lfp);
    
    cout << lfp << endl;
+}
+
+void readOneMeta(ifstream& fin, vector<char>& mdc, vector<string>& mdd, 
+                 vector<int>& cycles)
+{
+   char mdcTemp, lp, rp, mddAppend;
+   string mddTemp;
+   int cyclesTemp;
+   
+   fin >> mdcTemp >> lp;
+   mdc.push_back(mdcTemp);
+   
+   // prime while loop
+   fin >> mddAppend;
+   while(mddAppend != ')')
+   {
+      mddTemp += mddAppend;
+      fin >> mddAppend;
+   }
+   mdd.push_back(mddTemp);
+   rp = mddAppend;
+   
+   fin >> cyclesTemp;
+   cycles.push_back(cyclesTemp);
+   
+   for( int i = 0; i < 1; i++ )
+   {
+      cout << mdc[i] << lp << mdd[i] << rp << cycles[i] << endl;
+   }
 }
