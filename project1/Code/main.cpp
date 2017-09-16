@@ -8,6 +8,9 @@
 using namespace std;
 
 const char SPACE = ' ';
+const char NEWLINE = '\n';
+const char LEFT_PARENTHESE = '(';
+const char RIGHT_PARENTHESE = ')';
 
 void getMetadataFilepath(ifstream& fin, string& mdfp);
 void getComponentCycleTimes(ifstream& fin, map<string, int>& cycleTimes);
@@ -16,11 +19,14 @@ void readConfigurationFile(ifstream& fin, map<string, int>& cycleTimes,
                            string& mdfp, string& lfp);
 void readOneMeta(ifstream& fin, vector<char>& mdc, vector<string>& mdd, 
                  vector<int>& cycles);
+void readMetadataFile(ifstream& fin, vector<char>& mdc, vector<string>& mdd, 
+                      vector<int>& cycles);
 
 int main(int argc, const char *argv[])
 {
    // declare variables
    ifstream fin;
+   ofstream fout;
    string metadataFilepath, logFilepath;
    map<string, int> cycleTimes;
    vector<char> metadataCodes;
@@ -42,12 +48,20 @@ int main(int argc, const char *argv[])
    fin.clear();
    fin.open(metadataFilepath);
    
-   fin.ignore(256, '\n');
-   
-   readOneMeta(fin, metadataCodes, metadataDescriptors, metadataCycles);
+   readMetadataFile(fin, metadataCodes, metadataDescriptors, metadataCycles);
       
    // close file stream
    fin.close();
+   
+////////////////////////////////////////////////////////////////////////////////
+
+   fout.clear();
+   fout.open(logFilepath);
+   
+   
+   
+   
+   fout.close()
    
    
    
@@ -141,6 +155,10 @@ void readOneMeta(ifstream& fin, vector<char>& mdc, vector<string>& mdd,
    while(mddAppend != ')')
    {
       mddTemp += mddAppend;
+      if(mddTemp == "hard")
+      {
+         mddTemp += SPACE;
+      }
       fin >> mddAppend;
    }
    mdd.push_back(mddTemp);
@@ -149,8 +167,32 @@ void readOneMeta(ifstream& fin, vector<char>& mdc, vector<string>& mdd,
    fin >> cyclesTemp;
    cycles.push_back(cyclesTemp);
    
-   for( int i = 0; i < 1; i++ )
+   
+}
+
+void readMetadataFile(ifstream& fin, vector<char>& mdc, vector<string>& mdd, 
+                      vector<int>& cycles)
+{
+   fin.ignore(256, NEWLINE);
+   
+   char c;   
+   int count = 0;
+   
+   while(c != '.')
    {
-      cout << mdc[i] << lp << mdd[i] << rp << cycles[i] << endl;
+      readOneMeta(fin, mdc, mdd, cycles);
+      count++;
+      fin >> c;
+   }
+   
+   // TESTING - output number of metadata items
+   cout << count << endl;
+   
+   // TESTING - output metadata
+   for( int i = 0; i < count; i++ )
+   {
+      cout << mdc[i] << LEFT_PARENTHESE 
+           << mdd[i] << RIGHT_PARENTHESE 
+           << cycles[i] << endl;
    }
 }
