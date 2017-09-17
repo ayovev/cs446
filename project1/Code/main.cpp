@@ -53,7 +53,7 @@ int main(int argc, const char *argv[])
    fin.close();
                 
    log(cycleTimes, metadataDescriptors, metadataCodes, metadataCycles,
-             logFilepath, logType, count);
+       logFilepath, logType, count);
    
    return EXIT_SUCCESS;
 }
