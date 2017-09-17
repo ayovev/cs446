@@ -18,7 +18,7 @@ int main(int argc, const char *argv[])
    vector<char> metadataCodes;
    vector<string> metadataDescriptors;
    vector<int> metadataCycles;
-   int count = 0, logType = 2; // logType test value
+   int count = 0, logType = 2;
    
    fin.clear();
    fin.open(argv[1]);
