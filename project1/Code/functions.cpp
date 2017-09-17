@@ -273,14 +273,66 @@ void log(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
 void checkConfigurationFile(ifstream& fin, const char *argv[])
 {
    string s = argv[1];
-   
    int found = s.find(".conf");
+   
    if(found == -1)
    {
       throw -1;
    }
    if(fin.is_open() == false)
    {
+      throw 0;
+   }
+   if(!(fin >> s))
+   {
+      throw -3;
+   }
+}
+
+void checkMetadataFile(ifstream& fin, string mdfp)
+{
+   string s;
+   int found = mdfp.find(".mdf");
+   
+   if(found == -1)
+   {
       throw -2;
+   }
+   if(fin.is_open() == false)
+   {
+      throw 0;
+   }
+   if(!(fin >> s))
+   {
+      throw -4;
+   }
+}
+
+int handleErrors(int e)
+{
+   if(e == -1)
+   {
+      cout << "ERROR CODE -1; INVALID CONFIGURATION FILE EXTENSION" << endl;
+      return EXIT_FAILURE;
+   }
+   if(e == -3)
+   {
+      cout << "ERROR CODE -3, EMPTY CONFIGURATION FILE" << endl;
+      return EXIT_FAILURE;
+   }
+   if(e == -2)
+   {
+      cout << "ERROR CODE -2; INVALID METADATA FILE EXTENSION" << endl;
+      return EXIT_FAILURE;
+   }
+   if(e == -4)
+   {
+      cout << "ERROR CODE -4, EMPTY METADATA FILE" << endl;
+      return EXIT_FAILURE;
+   }
+   if(e == 0)
+   {
+      cout << "ERROR CODE 0; FILE NOT FOUND" << endl;
+      return EXIT_FAILURE;
    }
 }
