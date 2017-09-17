@@ -73,21 +73,9 @@ void readConfigurationFile(ifstream& fin, map<string, int>& cycleTimes,
 {
    getMetadataFilepath(fin, mdfp);
    
-   // TESTING - print metadata filepath
-   cout << mdfp << endl;
-   
    getComponentCycleTimes(fin, cycleTimes);
    
-   // TESTING - print map keys and values
-   for(auto& x : cycleTimes)
-   {
-      cout << x.first << SPACE << x.second << endl;
-   }
-   
-   // read in log file path and store in string
    getLogFilepath(fin, lfp);
-   
-   cout << lfp << endl;
 }
 
 void readOneMeta(ifstream& fin, vector<string>& mdd, vector<char>& mdc, 
@@ -116,8 +104,6 @@ void readOneMeta(ifstream& fin, vector<string>& mdd, vector<char>& mdc,
    
    fin >> cyclesTemp;
    cycles.push_back(cyclesTemp);
-   
-   
 }
 
 void readMetadataFile(ifstream& fin, vector<string>& mdd, vector<char>& mdc, 
@@ -133,17 +119,6 @@ void readMetadataFile(ifstream& fin, vector<string>& mdd, vector<char>& mdc,
       readOneMeta(fin, mdd, mdc, cycles);
       count++;
       fin >> c;
-   }
-   
-   // TESTING - output number of metadata items
-   cout << count << endl;
-   
-   // TESTING - output metadata
-   for( int i = 0; i < count; i++ )
-   {
-      cout << mdc[i] << LEFT_PARENTHESE 
-           << mdd[i] << RIGHT_PARENTHESE 
-           << cycles[i] << endl;
    }
 }
 
@@ -195,7 +170,7 @@ int calculateTime(map<string, int>& cycleTimes, vector<string>& mdd,
 void logToMonitor(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
                   vector<int>& mdcy, string logFilepath, int logType, int count)
 {
-   cout << "Configuration File Data" << endl;   
+   cout << endl << "Configuration File Data" << endl;   
    for(auto& x : cycleTimes)
    {
       cout << x.first << " = " << x.second << " ms / cycle" << endl;
@@ -226,5 +201,71 @@ void logToMonitor(map<string, int>& cycleTimes, vector<string>& mdd, vector<char
            << mdcy[index] << SPACE << HYPHEN << SPACE
            << calculateTime(cycleTimes, mdd, mdcy, index)
            << endl;
+   }
+   cout << endl;
+}
+
+void logToFile(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
+               vector<int>& mdcy, string logFilepath, int logType, int count)
+{
+   ofstream fout;
+   
+   fout.clear();
+   fout.open(logFilepath);
+   
+   fout << "Configuration File Data" << endl;   
+   for(auto& x : cycleTimes)
+   {
+      fout << x.first << " = " << x.second << " ms / cycle" << endl;
+   }
+   
+   fout << "Logged to: ";
+   
+   if(logType == MONITOR)
+   {
+      fout << "monitor" << endl << endl;
+   }
+   else if(logType == OUTPUT_FILE)
+   {
+      fout << logFilepath << endl << endl;
+   }
+   else if(logType == MONITOR_AND_OUTPUT_FILE)
+   {
+      fout << "monitor and " << logFilepath << endl << endl;
+   }
+   
+   string temp;
+   
+   fout << "Meta-Data Metrics" << endl;
+   for(int index = 2; index < count - 2; index++)
+   {      
+      fout << mdco[index] << LEFT_PARENTHESE
+           << mdd[index] << RIGHT_PARENTHESE
+           << mdcy[index] << SPACE << HYPHEN << SPACE
+           << calculateTime(cycleTimes, mdd, mdcy, index)
+           << endl;
+   }
+}
+
+void log(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
+         vector<int>& mdcy, string logFilepath, int logType, int count)
+{
+   if(logType == MONITOR)
+   {
+      logToMonitor(cycleTimes, mdd, mdco, mdcy,
+                   logFilepath, logType, count);
+   }
+   else if(logType == OUTPUT_FILE)
+   {
+      logToFile(cycleTimes, mdd, mdco, mdcy,
+                logFilepath, logType, count);
+   }
+   else if(logType == MONITOR_AND_OUTPUT_FILE)
+   {
+      logToMonitor(cycleTimes, mdd, mdco, mdcy,
+                   logFilepath, logType, count);
+                   
+      logToFile(cycleTimes, mdd, mdco, mdcy,
+                logFilepath, logType, count);
    }
 }
