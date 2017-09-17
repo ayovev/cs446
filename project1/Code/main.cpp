@@ -20,7 +20,6 @@ int main(int argc, const char *argv[])
    vector<int> metadataCycles;
    int count = 0, logType = 2; // logType test value
    
-   // clear and open file stream
    fin.clear();
    fin.open(argv[1]);
    
@@ -30,30 +29,27 @@ int main(int argc, const char *argv[])
    }
    catch(int e)
    {
-      if(e == -1)
-      {
-         cout << "ERROR CODE -1; INVALID CONFIGURATION FILE EXTENSION" << endl;
-         return EXIT_FAILURE;
-      }
-      if(e == -2)
-      {
-         cout << "ERROR CODE -2; FILE NOT FOUND" << endl;
-         return EXIT_FAILURE;
-      }
+      return handleErrors(e);
    }
    
    readConfigurationFile(fin, cycleTimes, metadataFilepath, logFilepath);
    
-   // close file stream
    fin.close();
    
-   // clear and open file stream
    fin.clear();
    fin.open(metadataFilepath);
    
+   try
+   {
+      checkMetadataFile(fin, metadataFilepath);
+   }
+   catch(int e)
+   {
+      return handleErrors(e);
+   }
+   
    readMetadataFile(fin, metadataDescriptors, metadataCodes, metadataCycles, count);
-      
-   // close file stream
+   
    fin.close();
                 
    log(cycleTimes, metadataDescriptors, metadataCodes, metadataCycles,
