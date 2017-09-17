@@ -44,10 +44,16 @@ int main(int argc, const char *argv[])
    
 ////////////////////////////////////////////////////////////////////////////////
    
-   cout << endl << endl;
+   cout << "TAKE OUT ABOVE OUTPUT BEFORE SUBMITTING!!" << endl << endl;
    
    logToMonitor(cycleTimes, metadataDescriptors, metadataCodes, metadataCycles,
                 logFilepath, logType, count);
+                
+////////////////////////////////////////////////////////////////////////////////
+                
+   fout.clear();
+   fout.open(logFilepath);
+   
    
    return EXIT_SUCCESS;
 }
