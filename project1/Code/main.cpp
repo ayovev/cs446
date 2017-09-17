@@ -13,14 +13,12 @@ int main(int argc, const char *argv[])
 {
    // declare variables
    ifstream fin;
-   ofstream fout;
    string metadataFilepath, logFilepath;
    map<string, int> cycleTimes;
    vector<char> metadataCodes;
    vector<string> metadataDescriptors;
    vector<int> metadataCycles;
-   int count = 0;
-   int logType = 2; // test value
+   int count = 0, logType = 2; // logType test value
    
    // clear and open file stream
    fin.clear();
@@ -31,8 +29,6 @@ int main(int argc, const char *argv[])
    // close file stream
    fin.close();
    
-////////////////////////////////////////////////////////////////////////////////
-   
    // clear and open file stream
    fin.clear();
    fin.open(metadataFilepath);
@@ -41,19 +37,9 @@ int main(int argc, const char *argv[])
       
    // close file stream
    fin.close();
-   
-////////////////////////////////////////////////////////////////////////////////
-   
-   cout << "TAKE OUT ABOVE OUTPUT BEFORE SUBMITTING!!" << endl << endl;
-   
-   logToMonitor(cycleTimes, metadataDescriptors, metadataCodes, metadataCycles,
-                logFilepath, logType, count);
                 
-////////////////////////////////////////////////////////////////////////////////
-                
-   fout.clear();
-   fout.open(logFilepath);
-   
+   log(cycleTimes, metadataDescriptors, metadataCodes, metadataCycles,
+             logFilepath, logType, count);
    
    return EXIT_SUCCESS;
 }
