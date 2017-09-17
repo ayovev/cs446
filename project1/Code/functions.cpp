@@ -32,14 +32,13 @@ void getMetadataFilepath(ifstream& fin, string& mdfp)
 void getComponentCycleTimes(ifstream& fin, map<string, int>& cycleTimes)
 {
    // declare variables
-   string component, check;
+   string component;
    int cycleTime;
    
    // prime while loop
    fin >> component;
-   check = component;
       
-   while(check != "Log:")
+   while(component != "Log:")
    {
       // check if the component is a hard drive
       if(component == "Hard")
@@ -57,7 +56,6 @@ void getComponentCycleTimes(ifstream& fin, map<string, int>& cycleTimes)
       cycleTimes.emplace(component, cycleTime);
       
       fin >> component;
-      check = component;
    }
 }
 
@@ -81,8 +79,8 @@ void readConfigurationFile(ifstream& fin, map<string, int>& cycleTimes,
 void readOneMeta(ifstream& fin, vector<string>& mdd, vector<char>& mdc, 
                  vector<int>& cycles)
 {
-   char mdcTemp, lp, rp, mddAppend;
    string mddTemp;
+   char mdcTemp, lp, rp, mddAppend;
    int cyclesTemp;
    
    fin >> mdcTemp >> lp;
