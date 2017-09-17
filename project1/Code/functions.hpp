@@ -24,3 +24,4 @@ void logToFile(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& 
                vector<int>& mdcy, string logFilepath, int logType, int count);
 void log(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
          vector<int>& mdcy, string logFilepath, int logType, int count);
+void checkConfigurationFile(ifstream& fin, const char *argv[]);

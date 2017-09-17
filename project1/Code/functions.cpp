@@ -269,3 +269,18 @@ void log(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
                 logFilepath, logType, count);
    }
 }
+
+void checkConfigurationFile(ifstream& fin, const char *argv[])
+{
+   string s = argv[1];
+   
+   int found = s.find(".conf");
+   if(found == -1)
+   {
+      throw -1;
+   }
+   if(fin.is_open() == false)
+   {
+      throw -2;
+   }
+}
