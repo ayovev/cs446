@@ -59,21 +59,44 @@ void getComponentCycleTimes(ifstream& fin, map<string, int>& cycleTimes)
    }
 }
 
-void getLogFilepath(ifstream& fin, string& lfp)
+void getLogTypeAndFilepath(ifstream& fin, string& lfp, int& lt)
 {
+   string s, temp;
+   
+   fin >> s;
+   s.append(" ");
+   fin >> temp;
+   s.append(temp);
+   s.append(" ");
+   fin >> temp;
+   s.append(temp);
+   
+   if(s == "Log to Monitor")
+   {
+      lt = 0;
+   }
+   else if(s == "Log to File")
+   {
+      lt = 1;
+   }
+   else if(s == "Log to Both")
+   {
+      lt = 2;
+   }
+   
    fin.ignore(256, ':');
    
    fin >> lfp;
 }
 
 void readConfigurationFile(ifstream& fin, map<string, int>& cycleTimes,
-                           string& mdfp, string& lfp)
+                           string& mdfp, string& lfp, int& lt)
 {
    getMetadataFilepath(fin, mdfp);
    
    getComponentCycleTimes(fin, cycleTimes);
    
-   getLogFilepath(fin, lfp);
+   getLogTypeAndFilepath(fin, lfp, lt);
 }
 
 void readOneMeta(ifstream& fin, vector<string>& mdd, vector<char>& mdc, 

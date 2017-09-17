@@ -32,7 +32,7 @@ int main(int argc, const char *argv[])
       return handleErrors(e);
    }
    
-   readConfigurationFile(fin, cycleTimes, metadataFilepath, logFilepath);
+   readConfigurationFile(fin, cycleTimes, metadataFilepath, logFilepath, logType);
    
    fin.close();
    
