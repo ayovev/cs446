@@ -61,6 +61,13 @@ void getComponentCycleTimes(ifstream& fin, map<string, int>& cycleTimes)
 
 void getLogTypeAndFilepath(ifstream& fin, string& lfp, int& lt)
 {
+   getLogType(fin, lt);
+   
+   getLogFilepath(fin, lfp);
+}
+
+void getLogType(ifstream& fin, int& lt)
+{
    string s, temp;
    
    fin >> s;
@@ -83,7 +90,10 @@ void getLogTypeAndFilepath(ifstream& fin, string& lfp, int& lt)
    {
       lt = 2;
    }
-   
+}
+
+void getLogFilepath(ifstream& fin, string& lfp)
+{
    fin.ignore(256, ':');
    
    fin >> lfp;

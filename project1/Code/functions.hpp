@@ -10,6 +10,8 @@ using namespace std;
 void getMetadataFilepath(ifstream& fin, string& mdfp);
 void getComponentCycleTimes(ifstream& fin, map<string, int>& cycleTimes);
 void getLogTypeAndFilepath(ifstream& fin, string& lfp, int& lt);
+void getLogType(ifstream& fin, int& lt);
+void getLogFilepath(ifstream& fin, string& lfp);
 void readConfigurationFile(ifstream& fin, map<string, int>& cycleTimes, 
                            string& mdfp, string& lfp, int& lt);
 void readOneMeta(ifstream& fin, vector<string>& mdd, vector<char>& mdc, 
