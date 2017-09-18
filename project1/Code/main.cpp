@@ -11,7 +11,7 @@ using namespace std;
 
 int main(int argc, const char *argv[])
 {
-   // declare variables, initialize count and set default logtype
+   // declare variables, initialize count and set default logtype (Log to Both)
    ifstream fin;
    string metadataFilepath, logFilepath;
    map<string, int> cycleTimes;

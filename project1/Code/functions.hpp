@@ -7,6 +7,7 @@
 
 using namespace std;
 
+// function prototypes
 void getMetadataFilepath(ifstream& fin, string& mdfp);
 void getComponentCycleTimes(ifstream& fin, map<string, int>& cycleTimes);
 void getLogTypeAndFilepath(ifstream& fin, string& lfp, int& lt);
