@@ -114,9 +114,14 @@ void readOneMeta(ifstream& fin, vector<string>& mdd, vector<char>& mdc,
 {
    string mddTemp;
    char mdcTemp, lp, rp, mddAppend;
-   int cyclesTemp;
+   int cyclesTemp = -999;
    
    fin >> mdcTemp >> lp;
+   
+   if(mdcTemp < 'A' || mdcTemp > 'Z')
+   {
+      throw -5;
+   }
    mdc.push_back(mdcTemp);
    
    // prime while loop
@@ -130,10 +135,31 @@ void readOneMeta(ifstream& fin, vector<string>& mdd, vector<char>& mdc,
       }
       fin >> mddAppend;
    }
+   
+   if(mddTemp == "start"/* || mddTemp != "end" || mddTemp!= "run" ||
+      mddTemp != "hard drive" || mddTemp != "keyboard" || mddTemp != "printer" ||
+      mddTemp != "monitor" || mddTemp != "allocate" || mddTemp != "block" ||
+      mddTemp != "mouse" || mddTemp != "speaker"*/)
+   {
+      cout << mddTemp << endl;
+      system("pause");
+      throw -6;
+   }
+   
    mdd.push_back(mddTemp);
    rp = mddAppend;
    
+   if(fin.peek() == ';')
+   {
+      throw -7;
+   }
+   
    fin >> cyclesTemp;
+   
+   if(cyclesTemp < 0)
+   {
+      throw -7;
+   }
    cycles.push_back(cyclesTemp);
 }
 
@@ -364,6 +390,21 @@ int handleErrors(int e)
    if(e == 0)
    {
       cout << "ERROR CODE 0; FILE NOT FOUND" << endl;
+      return EXIT_FAILURE;
+   }
+   if(e == -5)
+   {
+      cout << "ERROR CODE -5; INVALID(LOWERCASE) OR MISSING METADATA CODE" << endl;
+      return EXIT_FAILURE;
+   }
+   if(e == -6)
+   {
+      cout << "ERROR CODE -6; INVALID(TYPO) OR MISSING METADATA DESCRIPTOR" << endl;
+      return EXIT_FAILURE;
+   }
+   if(e == -7)
+   {
+      cout << "ERROR CODE -7; INVALID(NEGATIVE) OR MISSING METADATA CYCLES" << endl;
       return EXIT_FAILURE;
    }
 }
