@@ -136,13 +136,11 @@ void readOneMeta(ifstream& fin, vector<string>& mdd, vector<char>& mdc,
       fin >> mddAppend;
    }
    
-   if(mddTemp == "start"/* || mddTemp != "end" || mddTemp!= "run" ||
-      mddTemp != "hard drive" || mddTemp != "keyboard" || mddTemp != "printer" ||
-      mddTemp != "monitor" || mddTemp != "allocate" || mddTemp != "block" ||
-      mddTemp != "mouse" || mddTemp != "speaker"*/)
+   if(!(mddTemp == "start" || mddTemp == "end" || mddTemp == "run" ||
+      mddTemp == "hard drive" || mddTemp == "keyboard" || mddTemp == "printer" ||
+      mddTemp == "monitor" || mddTemp == "allocate" || mddTemp == "block" ||
+      mddTemp == "mouse" || mddTemp == "speaker"))
    {
-      cout << mddTemp << endl;
-      system("pause");
       throw -6;
    }
    
