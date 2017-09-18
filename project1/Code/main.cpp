@@ -58,8 +58,16 @@ int main(int argc, const char *argv[])
       return handleErrors(e);
    }
    
-   // process metadata file
-   readMetadataFile(fin, metadataDescriptors, metadataCodes, metadataCycles, count);
+   try
+   {
+      // process metadata file
+      readMetadataFile(fin, metadataDescriptors, metadataCodes, metadataCycles, count);
+   }
+   catch(int e)
+   {
+      return handleErrors(e);
+   }
+   
    
    // close metadata file
    fin.close();
