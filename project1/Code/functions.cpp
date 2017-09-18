@@ -365,14 +365,14 @@ void checkMetadataFile(ifstream& fin, string mdfp)
 
 int handleErrors(int e)
 {
+   if(e == 0)
+   {
+      cout << "ERROR CODE 0; FILE NOT FOUND" << endl;
+      return EXIT_FAILURE;
+   }
    if(e == -1)
    {
       cout << "ERROR CODE -1; INVALID CONFIGURATION FILE EXTENSION" << endl;
-      return EXIT_FAILURE;
-   }
-   if(e == -3)
-   {
-      cout << "ERROR CODE -3, EMPTY CONFIGURATION FILE" << endl;
       return EXIT_FAILURE;
    }
    if(e == -2)
@@ -380,14 +380,15 @@ int handleErrors(int e)
       cout << "ERROR CODE -2; INVALID METADATA FILE EXTENSION" << endl;
       return EXIT_FAILURE;
    }
+   if(e == -3)
+   {
+      cout << "ERROR CODE -3, EMPTY CONFIGURATION FILE" << endl;
+      return EXIT_FAILURE;
+   }
+   
    if(e == -4)
    {
       cout << "ERROR CODE -4, EMPTY METADATA FILE" << endl;
-      return EXIT_FAILURE;
-   }
-   if(e == 0)
-   {
-      cout << "ERROR CODE 0; FILE NOT FOUND" << endl;
       return EXIT_FAILURE;
    }
    if(e == -5)
