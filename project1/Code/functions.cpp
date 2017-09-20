@@ -430,12 +430,14 @@ int handleErrors(int e, map<string, int>& cycleTimes, vector<string>& mdd, vecto
       return EXIT_FAILURE;
    }
    if(e == -3)
-   {
+   {      
       cout << "ERROR CODE -3, EMPTY CONFIGURATION FILE" << endl;
       return EXIT_FAILURE;
    }
    if(e == -4)
    {
+      log(cycleTimes, mdd, mdco, mdcy, logFilepath, logType, count + 2);
+      
       cout << "ERROR CODE -4, EMPTY METADATA FILE" << endl;
       return EXIT_FAILURE;
    }
