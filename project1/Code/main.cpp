@@ -56,7 +56,8 @@ int main(int argc, const char *argv[])
    catch(int e)
    {
       // if error occurs, exit program with error code
-      return handleErrors(e);
+      return handleErrors(e, cycleTimes, metadataDescriptors, metadataCodes,
+                          metadataCycles, logFilepath, logType, count);
    }
    // otherwise exit program successfully
    return EXIT_SUCCESS;

@@ -411,7 +411,8 @@ void checkMetadataFile(ifstream& fin, string mdfp)
 
 // handles all errors given the error code by displaying a corresponding
 // message and terminating the program
-int handleErrors(int e)
+int handleErrors(int e, map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
+                 vector<int>& mdcy, string logFilepath, int logType, int count)
 {
    if(e == 0)
    {
@@ -440,17 +441,23 @@ int handleErrors(int e)
    }
    if(e == -5)
    {
+      log(cycleTimes, mdd, mdco, mdcy, logFilepath, logType, count + 2);
+      
       cout << "ERROR CODE -5; INVALID(LOWERCASE) OR MISSING METADATA CODE" << endl;
       return EXIT_FAILURE;
    }
    if(e == -6)
    {
+      log(cycleTimes, mdd, mdco, mdcy, logFilepath, logType, count + 2);
+      
       cout << "ERROR CODE -6; INVALID(TYPO) OR MISSING METADATA DESCRIPTOR" << endl;
       return EXIT_FAILURE;
    }
    if(e == -7)
    {
-      cout << "ERROR CODE -7; INVALID(NEGATIVE) OR MISSING METADATA CYCLES" << endl;
+      log(cycleTimes, mdd, mdco, mdcy, logFilepath, logType, count + 2);
+      
+      cout << "ERROR CODE -7; INVALID(NEGATIVE) OR MISSING METADATA CYCLES" << endl;      
       return EXIT_FAILURE;
    }
 }
