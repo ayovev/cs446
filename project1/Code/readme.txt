@@ -59,6 +59,7 @@ Line 365: void checkConfigurationFile(ifstream& fin, const char *argv[])
 Line 389: void checkMetadataFile(ifstream& fin, string mdfp)
           checks the metadata file for any potential errors
           
-Line 414: int handleErrors(int e)
+Line 414: int handleErrors(int e, map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
+                           vector<int>& mdcy, string logFilepath, int logType, int count)
           handles all errors given the error code by displaying a corresponding
-          message and terminating the program
+          message and terminates the program after logging
