@@ -58,5 +58,6 @@ int main(int argc, const char *argv[])
       // if error occurs, exit program with error code
       return handleErrors(e);
    }
+   // otherwise exit program successfully
    return EXIT_SUCCESS;
 }

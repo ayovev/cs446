@@ -18,10 +18,13 @@ const char LEFT_PARENTHESE = '(';
 const char RIGHT_PARENTHESE = ')';
 const char HYPHEN = '-';
 
+// gets the filepath of the metadata file from the configuration file
 void getMetadataFilepath(ifstream& fin, string& mdfp)
 {
+   // declare variable
    char c;
    
+   // prime filestream
    fin.ignore(256, ':');
    fin.ignore(256, ':');
    fin.get(c);
@@ -29,6 +32,7 @@ void getMetadataFilepath(ifstream& fin, string& mdfp)
    fin >> mdfp;
 }
 
+// gets the various component cycle times from the configuration file
 void getComponentCycleTimes(ifstream& fin, map<string, int>& cycleTimes)
 {
    // declare variables
@@ -50,15 +54,19 @@ void getComponentCycleTimes(ifstream& fin, map<string, int>& cycleTimes)
          component.append(drive);
       }
       
+      // prime filestream and get the cycle time for the current component
       fin.ignore(256, ':');
       fin >> cycleTime;
       
+      // add element to vector
       cycleTimes.emplace(component, cycleTime);
       
+      // get next component
       fin >> component;
    }
 }
 
+// uses modular functions to get log type and filepath from configuration file
 void getLogTypeAndFilepath(ifstream& fin, string& lfp, int& lt)
 {
    getLogType(fin, lt);
@@ -66,10 +74,13 @@ void getLogTypeAndFilepath(ifstream& fin, string& lfp, int& lt)
    getLogFilepath(fin, lfp);
 }
 
+// gets log type from configuration file
 void getLogType(ifstream& fin, int& lt)
 {
+   // declare variables
    string s, temp;
    
+   // build string
    fin >> s;
    s.append(" ");
    fin >> temp;
@@ -78,6 +89,7 @@ void getLogType(ifstream& fin, int& lt)
    fin >> temp;
    s.append(temp);
    
+   // check string against possible options to determine log type
    if(s == "Log to Monitor")
    {
       lt = 0;
@@ -92,13 +104,16 @@ void getLogType(ifstream& fin, int& lt)
    }
 }
 
+// gets the path that the log file should be output to
 void getLogFilepath(ifstream& fin, string& lfp)
 {
+   // prime filestream
    fin.ignore(256, ':');
    
    fin >> lfp;
 }
 
+// uses modular functions to read the entire configuration file
 void readConfigurationFile(ifstream& fin, map<string, int>& cycleTimes,
                            string& mdfp, string& lfp, int& lt)
 {
@@ -109,26 +124,35 @@ void readConfigurationFile(ifstream& fin, map<string, int>& cycleTimes,
    getLogTypeAndFilepath(fin, lfp, lt);
 }
 
+// reads in a single piece of metadata from the metadata file
 void readOneMeta(ifstream& fin, vector<string>& mdd, vector<char>& mdc, 
                  vector<int>& cycles)
 {
+   // declare variables
    string mddTemp;
    char mdcTemp, lp, rp, mddAppend;
    int cyclesTemp = -999;
    
+   // get metadata code
    fin >> mdcTemp >> lp;
    
+   // check if the metadata code is lowercase or an invalid character
    if(mdcTemp < 'A' || mdcTemp > 'Z')
    {
       throw -5;
    }
+   
+   // add element to vector
    mdc.push_back(mdcTemp);
    
    // prime while loop
    fin >> mddAppend;
    while(mddAppend != ')')
    {
+      // construct the metadata descriptor string character by character 
       mddTemp += mddAppend;
+      
+      // check if the component is a hard drive
       if(mddTemp == "hard")
       {
          mddTemp += SPACE;
@@ -136,6 +160,7 @@ void readOneMeta(ifstream& fin, vector<string>& mdd, vector<char>& mdc,
       fin >> mddAppend;
    }
    
+   // check for an invalid metadata descriptor
    if(!(mddTemp == "start" || mddTemp == "end" || mddTemp == "run" ||
       mddTemp == "hard drive" || mddTemp == "keyboard" || mddTemp == "printer" ||
       mddTemp == "monitor" || mddTemp == "allocate" || mddTemp == "block" ||
@@ -144,9 +169,11 @@ void readOneMeta(ifstream& fin, vector<string>& mdd, vector<char>& mdc,
       throw -6;
    }
    
+   // add element to vector
    mdd.push_back(mddTemp);
    rp = mddAppend;
    
+   // check if the number of cycles is missing
    if(fin.peek() == ';')
    {
       throw -7;
@@ -154,20 +181,26 @@ void readOneMeta(ifstream& fin, vector<string>& mdd, vector<char>& mdc,
    
    fin >> cyclesTemp;
    
+   // check if the number of cycles is negative
    if(cyclesTemp < 0)
    {
       throw -7;
    }
+   
+   // add element to vector
    cycles.push_back(cyclesTemp);
 }
 
+// uses a modular function to read the entire metadata file
 void readMetadataFile(ifstream& fin, vector<string>& mdd, vector<char>& mdc, 
                       vector<int>& cycles, int& count)
 {
-   fin.ignore(256, NEWLINE);
-   
+   // declare variables
    char c;
    count = 0;
+   
+   // prime filestream
+   fin.ignore(256, NEWLINE);
    
    while(c != '.')
    {
@@ -177,6 +210,8 @@ void readMetadataFile(ifstream& fin, vector<string>& mdd, vector<char>& mdc,
    }
 }
 
+// calculate the metadata metrics by "mapping" metadata descriptors to their
+// corresponding components
 int calculateTime(map<string, int>& cycleTimes, vector<string>& mdd, 
                   vector<int>& mdc, int index)
 {
@@ -222,6 +257,7 @@ int calculateTime(map<string, int>& cycleTimes, vector<string>& mdd,
    }
 }
 
+// logs all data to the monitor in the prescribed example format
 void logToMonitor(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
                   vector<int>& mdcy, string logFilepath, int logType, int count)
 {
@@ -246,8 +282,6 @@ void logToMonitor(map<string, int>& cycleTimes, vector<string>& mdd, vector<char
       cout << "monitor and " << logFilepath << endl << endl;
    }
    
-   string temp;
-   
    cout << "Meta-Data Metrics" << endl;
    for(int index = 2; index < count - 2; index++)
    {      
@@ -260,11 +294,14 @@ void logToMonitor(map<string, int>& cycleTimes, vector<string>& mdd, vector<char
    cout << endl;
 }
 
+// logs all data to the given file in the prescribed example format
 void logToFile(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
                vector<int>& mdcy, string logFilepath, int logType, int count)
 {
+   // declare variable
    ofstream fout;
    
+   // clear and open filestream
    fout.clear();
    fout.open(logFilepath);
    
@@ -289,8 +326,6 @@ void logToFile(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& 
       fout << "monitor and " << logFilepath << endl << endl;
    }
    
-   string temp;
-   
    fout << "Meta-Data Metrics" << endl;
    for(int index = 2; index < count - 2; index++)
    {      
@@ -302,6 +337,7 @@ void logToFile(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& 
    }
 }
 
+// checks the logtype variable and uses modular functions to log accordingly
 void log(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
          vector<int>& mdcy, string logFilepath, int logType, int count)
 {
@@ -325,44 +361,56 @@ void log(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
    }
 }
 
+// checks the configuration file for any potential errors
 void checkConfigurationFile(ifstream& fin, const char *argv[])
 {
+   // declare variables
    string s = argv[1];
    int found = s.find(".conf");
    
+   // checks extension of configuration file
    if(found == -1)
    {
       throw -1;
    }
+   // checks for a valid filename (open file)
    if(fin.is_open() == false)
    {
       throw 0;
    }
+   // checks if the file is empty
    if(!(fin >> s))
    {
       throw -3;
    }
 }
 
+// checks the metadata file for any potential errors
 void checkMetadataFile(ifstream& fin, string mdfp)
 {
+   // declare variables
    string s;
    int found = mdfp.find(".mdf");
    
+   // checks extension of metadata file
    if(found == -1)
    {
       throw -2;
    }
+   // checks for a valid filename (open file)
    if(fin.is_open() == false)
    {
       throw 0;
    }
+   // checks if the file is empty
    if(!(fin >> s))
    {
       throw -4;
    }
 }
 
+// handles all errors given the error code by displaying a corresponding
+// message and terminating the program
 int handleErrors(int e)
 {
    if(e == 0)
