@@ -433,7 +433,6 @@ int handleErrors(int e)
       cout << "ERROR CODE -3, EMPTY CONFIGURATION FILE" << endl;
       return EXIT_FAILURE;
    }
-   
    if(e == -4)
    {
       cout << "ERROR CODE -4, EMPTY METADATA FILE" << endl;
