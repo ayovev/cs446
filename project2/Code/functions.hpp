@@ -20,7 +20,7 @@ void readOneMeta(ifstream& fin, vector<string>& mdd, vector<char>& mdc,
                  vector<int>& cycles);
 void readMetadataFile(ifstream& fin, vector<string>& mdd, vector<char>& mdc, 
                       vector<int>& cycles, int& count);
-int calculateTime(map<string, int>& cycleTimes, vector<string>& mdd, 
+int calculateCycleTime(map<string, int>& cycleTimes, vector<string>& mdd, 
                   vector<int>& mdc, int index);
 void logToMonitor(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco, 
                   vector<int>& mdcy, string logFilepath, int logType, int count);
