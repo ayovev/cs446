@@ -9,6 +9,12 @@
 
 using namespace std;
 
+const int START = 0;
+const int READY = 1;
+const int RUNNING = 2;
+const int WAITING = 3;
+const int EXIT = 4;
+
 struct PCB
 {
    int processState;
