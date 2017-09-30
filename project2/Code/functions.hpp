@@ -10,11 +10,12 @@ using namespace std;
 // function prototypes
 void getMetadataFilepath(ifstream& fin, string& mdfp);
 void getComponentCycleTimes(ifstream& fin, map<string, int>& cycleTimes);
-void getLogTypeAndFilepath(ifstream& fin, string& lfp, int& lt);
+void getSystemMemory(ifstream& fin, int& sm, string& units);
 void getLogType(ifstream& fin, int& lt);
 void getLogFilepath(ifstream& fin, string& lfp);
+void getLogTypeAndFilepath(ifstream& fin, string& lfp, int& lt);
 void readConfigurationFile(ifstream& fin, map<string, int>& cycleTimes, 
-                           string& mdfp, string& lfp, int& lt);
+                           string& mdfp, string& lfp, int& lt, int& sm, string& units);
 void readOneMeta(ifstream& fin, vector<string>& mdd, vector<char>& mdc, 
                  vector<int>& cycles);
 void readMetadataFile(ifstream& fin, vector<string>& mdd, vector<char>& mdc, 

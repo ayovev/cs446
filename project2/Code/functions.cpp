@@ -42,7 +42,7 @@ void getComponentCycleTimes(ifstream& fin, map<string, int>& cycleTimes)
    // prime while loop
    fin >> component;
       
-   while(component != "Log:")
+   while(component != "System")
    {
       // check if the component is a hard drive
       if(component == "Hard")
@@ -66,12 +66,30 @@ void getComponentCycleTimes(ifstream& fin, map<string, int>& cycleTimes)
    }
 }
 
-// uses modular functions to get log type and filepath from configuration file
-void getLogTypeAndFilepath(ifstream& fin, string& lfp, int& lt)
+void getSystemMemory(ifstream& fin, int& sm, string& units)
 {
-   getLogType(fin, lt);
+   // declare variables
+   char c;
    
-   getLogFilepath(fin, lfp);
+   // read character by character up to left parenthese
+   while(c != LEFT_PARENTHESE)
+   {
+      fin >> c;
+   }
+   
+   // read character by character until right parenthese
+   while(fin.peek() != RIGHT_PARENTHESE)
+   {
+      // read in character and concatenate to string to build unit
+      fin >> c;
+      units += c;
+   }
+   // garbage (left parenthese, colon)
+   fin >> c;
+   fin >> c;
+   
+   // read in memory size
+   fin >> sm;
 }
 
 // gets log type from configuration file
@@ -113,13 +131,23 @@ void getLogFilepath(ifstream& fin, string& lfp)
    fin >> lfp;
 }
 
+// uses modular functions to get log type and filepath from configuration file
+void getLogTypeAndFilepath(ifstream& fin, string& lfp, int& lt)
+{
+   getLogType(fin, lt);
+   
+   getLogFilepath(fin, lfp);
+}
+
 // uses modular functions to read the entire configuration file
 void readConfigurationFile(ifstream& fin, map<string, int>& cycleTimes,
-                           string& mdfp, string& lfp, int& lt)
+                           string& mdfp, string& lfp, int& lt, int& sm, string& units)
 {
    getMetadataFilepath(fin, mdfp);
    
    getComponentCycleTimes(fin, cycleTimes);
+   
+   getSystemMemory(fin, sm, units);
    
    getLogTypeAndFilepath(fin, lfp, lt);
 }
