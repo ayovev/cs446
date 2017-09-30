@@ -289,37 +289,7 @@ int calculateCycleTime(map<string, int>& cycleTimes, vector<string>& mdd,
 void logToMonitor(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
                   vector<int>& mdcy, string logFilepath, int logType, int count)
 {
-   cout << endl << "Configuration File Data" << endl;   
-   for(auto& x : cycleTimes)
-   {
-      cout << x.first << " = " << x.second << " ms / cycle" << endl;
-   }
    
-   cout << "Logged to: ";
-   
-   if(logType == MONITOR)
-   {
-      cout << "monitor" << endl << endl;
-   }
-   else if(logType == OUTPUT_FILE)
-   {
-      cout << logFilepath << endl << endl;
-   }
-   else if(logType == MONITOR_AND_OUTPUT_FILE)
-   {
-      cout << "monitor and " << logFilepath << endl << endl;
-   }
-   
-   cout << "Meta-Data Metrics" << endl;
-   for(int index = 2; index < count - 2; index++)
-   {      
-      cout << mdco[index] << LEFT_PARENTHESE
-           << mdd[index] << RIGHT_PARENTHESE
-           << mdcy[index] << SPACE << HYPHEN << SPACE
-           << calculateTime(cycleTimes, mdd, mdcy, index)
-           << endl;
-   }
-   cout << endl;
 }
 
 // logs all data to the given file in the prescribed example format
