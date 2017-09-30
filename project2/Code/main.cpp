@@ -9,16 +9,21 @@
 
 using namespace std;
 
+struct PCB
+{
+   int processState;
+};
+
 int main(int argc, const char *argv[])
 {
    // declare variables, initialize count and set default logtype (Log to Both)
    ifstream fin;
-   string metadataFilepath, logFilepath;
+   string metadataFilepath, logFilepath, units;
    map<string, int> cycleTimes;
    vector<char> metadataCodes;
    vector<string> metadataDescriptors;
    vector<int> metadataCycles;
-   int count = 0, logType = 2;
+   int systemMemory, count = 0, logType = 2;
    
    try
    {
@@ -30,7 +35,8 @@ int main(int argc, const char *argv[])
       checkConfigurationFile(fin, argv);
       
       // process configuration file
-      readConfigurationFile(fin, cycleTimes, metadataFilepath, logFilepath, logType);
+      readConfigurationFile(fin, cycleTimes, metadataFilepath, logFilepath, logType, 
+                            systemMemory, units);
       
       // close configuration file
       fin.close();
