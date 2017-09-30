@@ -332,7 +332,7 @@ void logToFile(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& 
       fout << mdco[index] << LEFT_PARENTHESE
            << mdd[index] << RIGHT_PARENTHESE
            << mdcy[index] << SPACE << HYPHEN << SPACE
-           << calculateTime(cycleTimes, mdd, mdcy, index)
+           << calculateCycleTime(cycleTimes, mdd, mdcy, index)
            << endl;
    }
 }
