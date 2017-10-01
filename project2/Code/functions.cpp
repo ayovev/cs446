@@ -243,7 +243,7 @@ void readMetadataFile(ifstream& fin, vector<string>& mdd, vector<char>& mdc,
 // calculate the metadata metrics by "mapping" metadata descriptors to their
 // corresponding components
 int calculateCycleTime(map<string, int>& cycleTimes, vector<string>& mdd, 
-                  vector<int>& mdc, int index)
+                       vector<int>& mdc, int index)
 {
    if(mdd[index] == "run")
    {
