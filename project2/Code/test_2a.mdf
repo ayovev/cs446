@@ -1,0 +1,7 @@
+Start Program Meta-Data Code:
+S(start)0; A(start)0; P(run)11; M(allocate)2;
+O(monitor)7; I(hard drive)8; O(printer)20;
+P(run)6; O(printer)4; M(block)6; I(keyboard)17;
+M(block)4; P(run)5; P(run)5; O(hard drive)6;
+P(run)18; A(end)0; S(end)0.
+End Program Meta-Data Code.
