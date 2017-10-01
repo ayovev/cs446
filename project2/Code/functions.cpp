@@ -10,6 +10,7 @@
 #include"functions.hpp"
 
 using namespace std;
+using namespace std::chrono;
 
 const int MONITOR = 0;
 const int OUTPUT_FILE = 1;
@@ -19,6 +20,12 @@ const char NEWLINE = '\n';
 const char LEFT_PARENTHESE = '(';
 const char RIGHT_PARENTHESE = ')';
 const char HYPHEN = '-';
+
+const int START = 0;
+const int READY = 1;
+const int RUNNING = 2;
+const int WAITING = 3;
+const int EXIT = 4;
 
 // gets the filepath of the metadata file from the configuration file
 void getMetadataFilepath(ifstream& fin, string& mdfp)
