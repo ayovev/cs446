@@ -20,7 +20,13 @@
 using namespace std;
 using namespace std::chrono;
 
+const int MONITOR = 0;
+const int OUTPUT_FILE = 1;
+const int MONITOR_AND_OUTPUT_FILE = 2;
 const char SPACE = ' ';
+const char NEWLINE = '\n';
+const char LEFT_PARENTHESE = '(';
+const char RIGHT_PARENTHESE = ')';
 const char HYPHEN = '-';
 
 const int START = 0;
@@ -36,6 +42,9 @@ struct PCB
              
 double getSleepTime(map<string, int>& cycleTimes, vector<string>& mdd, 
                     vector<int>& mdc, int index);
+                    
+void output(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
+            vector<int>& mdcy, string logFilepath, int logType, int count);
 
 int main(int argc, const char *argv[])
 {
@@ -92,19 +101,22 @@ int main(int argc, const char *argv[])
       return handleErrors(e, cycleTimes, metadataDescriptors, metadataCodes,
                           metadataCycles, logFilepath, logType, count);
    }
+////////////////////////////////////////////////////////////////////////////////
+   // declare variables
+   ofstream fout;
    
-   // for(int i = 0; i < count; i++)
-   // {
-   //    cout << getSleepTime(cycleTimes, metadataDescriptors, metadataCycles, i) << endl;
-   // }
-   // 
-   // system("pause");
+   // clear and open filestream
+   fout.clear();
+   fout.open(logFilepath);
    
+   // capture snapshot of starting point in time
    t1 = chrono::high_resolution_clock::now();
    
+   // loop through all pieces of metadata in the metadata file
    for(int i = 0; i < count; i++)
    {
-      if(metadataCodes[i] == 'S' && metadataDescriptors[i] == "start")
+      // check metadata code and output data accordingly
+      if(metadataCodes[i] == 'S')
       {
          Sleep(getSleepTime(cycleTimes, metadataDescriptors, metadataCycles, i));
          
@@ -112,11 +124,61 @@ int main(int argc, const char *argv[])
          
          time_span = duration_cast<duration<double>>(t2 - t1);
          
-         cout << fixed << setprecision(6) << time_span.count() << SPACE << HYPHEN << SPACE;
+         fout << fixed << setprecision(6) << time_span.count() << SPACE << HYPHEN << SPACE;
          
-         cout << "Simulator program starting" << endl;
+         fout << "Simulator program ";
+         
+         if(metadataDescriptors[i] == "start")
+         {
+            fout << "starting" << endl;
+         }
+         else if(metadataDescriptors[i] == "end")
+         {
+            fout << "ending";
+         }
       }
-      if(metadataCodes[i] == 'A' && metadataDescriptors[i] == "start")
+      
+      // check metadata code and output data accordingly
+      if(metadataCodes[i] == 'A')
+      {
+         if(metadataDescriptors[i] == "start")
+         {
+            for(int j = 0; j < 2; j++)
+            {
+               Sleep(getSleepTime(cycleTimes, metadataDescriptors, metadataCycles, i));
+               
+               t2 = high_resolution_clock::now();
+               
+               time_span = duration_cast<duration<double>>(t2 - t1);
+               
+               fout << fixed << setprecision(6) << time_span.count() << SPACE << HYPHEN << SPACE;
+               
+               if(j == 0)
+               {
+                  fout << "OS: preparing process 1" << endl;
+               }
+               else if(j == 1)
+               {
+                  fout << "OS: starting process 1" << endl;
+               }
+            }
+         }
+         else if(metadataDescriptors[i] == "end")
+         {
+            Sleep(getSleepTime(cycleTimes, metadataDescriptors, metadataCycles, i));
+            
+            t2 = high_resolution_clock::now();
+            
+            time_span = duration_cast<duration<double>>(t2 - t1);
+            
+            fout << fixed << setprecision(6) << time_span.count() << SPACE << HYPHEN << SPACE;
+            
+            fout << "OS: removing process 1" << endl;
+         }
+      }
+      
+      // check metadata code and output data accordingly
+      if(metadataCodes[i] == 'P')
       {
          for(int j = 0; j < 2; j++)
          {
@@ -126,41 +188,72 @@ int main(int argc, const char *argv[])
             
             time_span = duration_cast<duration<double>>(t2 - t1);
             
-            cout << fixed << setprecision(6) << time_span.count() << SPACE << HYPHEN << SPACE;
+            fout << fixed << setprecision(6) << time_span.count() << SPACE << HYPHEN << SPACE;
             
             if(j == 0)
             {
-               cout << "OS: preparing process 1" << endl;
+               fout << "Process 1: start processing action" << endl;
             }
             else if(j == 1)
             {
-               cout << "OS: starting process 1" << endl;
+               fout << "Process 1: end processing action" << endl;
             }
          }
       }
-      if(metadataCodes[i] == 'P' && metadataDescriptors[i] == "run")
+      
+      // check metadata code and output data accordingly
+      if(metadataCodes[i] == 'M')
       {
-         for(int j = 0; j < 2; j++)
+         if(metadataDescriptors[i] == "allocate")
          {
-            Sleep(getSleepTime(cycleTimes, metadataDescriptors, metadataCycles, i));
-            
-            t2 = high_resolution_clock::now();
-            
-            time_span = duration_cast<duration<double>>(t2 - t1);
-            
-            cout << fixed << setprecision(6) << time_span.count() << SPACE << HYPHEN << SPACE;
-            
-            if(j == 0)
+            for(int j = 0; j < 2; j++)
             {
-               cout << "Process 1: start processing action" << endl;
+               Sleep(getSleepTime(cycleTimes, metadataDescriptors, metadataCycles, i));
+               
+               t2 = high_resolution_clock::now();
+               
+               time_span = duration_cast<duration<double>>(t2 - t1);
+               
+               fout << fixed << setprecision(6) << time_span.count() << SPACE << HYPHEN << SPACE;
+               
+               if(j == 0)
+               {
+                  fout << "Process 1: allocating memory" << endl;
+               }
+               else if(j == 1)
+               {
+                  fout << "memory allocated at 0x" 
+                       << setfill('0') << setw(8) 
+                       << allocateMemory(systemMemory) << endl;
+               }
             }
-            else if(j == 1)
+         }
+         else if(metadataDescriptors[i] == "block")
+         {
+            for(int j = 0; j < 2; j++)
             {
-               cout << "Process 1: end processing action" << endl;
+               Sleep(getSleepTime(cycleTimes, metadataDescriptors, metadataCycles, i));
+               
+               t2 = high_resolution_clock::now();
+               
+               time_span = duration_cast<duration<double>>(t2 - t1);
+               
+               fout << fixed << setprecision(6) << time_span.count() << SPACE << HYPHEN << SPACE;
+            
+               if(j == 0)
+               {
+                  fout << "Process 1: start memory blocking" << endl;
+               }
+               else if(j == 1)
+               {
+                  fout << "Process 1: end memory blocking" << endl;
+               }
             }
          }
       }
-      if(metadataCodes[i] == 'M' && metadataDescriptors[i] == "allocate")
+      
+      // check metadata code and output data accordingly
+      if(metadataCodes[i] == 'O' || metadataCodes[i] == 'I')
       {
          for(int j = 0; j < 2; j++)
          {
@@ -170,39 +263,31 @@ int main(int argc, const char *argv[])
             
             time_span = duration_cast<duration<double>>(t2 - t1);
             
-            cout << fixed << setprecision(6) << time_span.count() << SPACE << HYPHEN << SPACE;
+            fout << fixed << setprecision(6) << time_span.count() << SPACE << HYPHEN << SPACE;
             
             if(j == 0)
             {
-               cout << "Process 1: allocating memory" << endl;
+               fout << "Process 1: start " << metadataDescriptors[i];
+               if(metadataCodes[i] == 'O')
+               {
+                  fout << " output" << endl;
+               }
+               else if(metadataCodes[i] == 'I')
+               {
+                  fout << " input" << endl;
+               }
             }
             else if(j == 1)
             {
-               cout << "memory allocated at 0x" 
-                    << setfill('0') << setw(8) 
-                    << allocateMemory(systemMemory) << endl;
-            }
-         }
-      }
-      if(metadataCodes[i] == 'O' && metadataDescriptors[i] == "monitor")
-      {
-         for(int j = 0; j < 2; j++)
-         {
-            Sleep(getSleepTime(cycleTimes, metadataDescriptors, metadataCycles, i));
-            
-            t2 = high_resolution_clock::now();
-            
-            time_span = duration_cast<duration<double>>(t2 - t1);
-            
-            cout << fixed << setprecision(6) << time_span.count() << SPACE << HYPHEN << SPACE;
-            
-            if(j == 0)
-            {
-               cout << "Process 1: start monitor output" << endl;
-            }
-            else if(j == 1)
-            {
-               cout << "Process 1: end monitor output" << endl;
+               fout << "Process 1: end " << metadataDescriptors[i];
+               if(metadataCodes[i] == 'O')
+               {
+                  fout << " output" << endl;
+               }
+               else if(metadataCodes[i] == 'I')
+               {
+                  fout << " input" << endl;
+               }
             }
          }
       }
