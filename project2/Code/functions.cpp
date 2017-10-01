@@ -7,7 +7,11 @@
 #include<chrono>
 #include<iomanip>
 
+// windows Sleep function -- WINDOWS TESTING PURPOSES ONLY
+#include<windows.h>
+
 #include"functions.hpp"
+#include"MemoryFunction.h"
 
 using namespace std;
 using namespace std::chrono;
@@ -27,18 +31,149 @@ const int RUNNING = 2;
 const int WAITING = 3;
 const int EXIT = 4;
 
-// gets the filepath of the metadata file from the configuration file
-void getMetadataFilepath(ifstream& fin, string& mdfp)
+// calculate the metadata metrics by "mapping" metadata descriptors to their
+// corresponding components
+int calculateCycleTime(map<string, int>& cycleTimes, vector<string>& mdd, 
+                       vector<int>& mdc, const int index)
 {
-   // declare variable
-   char c;
+   if(mdd[index] == "run")
+   {
+      return mdc[index] * cycleTimes["Processor"];
+   }
+   else if(mdd[index] == "hard drive")
+   {
+      return mdc[index] * cycleTimes["Hard drive"];
+   }
+   else if(mdd[index] == "keyboard")
+   {
+      return mdc[index] * cycleTimes["Keyboard"];
+   }
+   else if(mdd[index] == "mouse")
+   {
+      return mdc[index] * cycleTimes["Mouse"];
+   }
+   else if(mdd[index] == "monitor")
+   {
+      return mdc[index] * cycleTimes["Monitor"];
+   }
+   else if(mdd[index] == "speaker")
+   {
+      return mdc[index] * cycleTimes["Speaker"];
+   }
+   else if(mdd[index] == "block")
+   {
+      return mdc[index] * cycleTimes["Memory"];
+   }
+   else if(mdd[index] == "allocate")
+   {
+      return mdc[index] * cycleTimes["Memory"];
+   }
+   else if(mdd[index] == "printer")
+   {
+      return mdc[index] * cycleTimes["Printer"];
+   }
+   else
+   {
+      return EXIT_FAILURE;
+   }
+}
+
+// calculate the value for sleep / wait function
+double calculateSleepTime(map<string, int>& cycleTimes, vector<string>& mdd, 
+                    vector<int>& mdc, const int index)
+{
+   if(mdd[index] == "start" || mdd[index] == "end")
+   {
+      return (double)0;
+   }
+   else if(mdd[index] == "run")
+   {
+      return (double)((double)mdc[index] * (double)cycleTimes["Processor"]);
+   }
+   else if(mdd[index] == "hard drive")
+   {
+      return (double)((double)mdc[index] * (double)cycleTimes["Hard drive"]);
+   }
+   else if(mdd[index] == "keyboard")
+   {
+      return (double)((double)mdc[index] * (double)cycleTimes["Keyboard"]);
+   }
+   else if(mdd[index] == "mouse")
+   {
+      return (double)((double)mdc[index] * (double)cycleTimes["Mouse"]);
+   }
+   else if(mdd[index] == "monitor")
+   {
+      return (double)((double)mdc[index] * (double)cycleTimes["Monitor"]);
+   }
+   else if(mdd[index] == "speaker")
+   {
+      return (double)((double)mdc[index] * (double)cycleTimes["Speaker"]);
+   }
+   else if(mdd[index] == "block")
+   {
+      return (double)((double)mdc[index] * (double)cycleTimes["Memory"]);
+   }
+   else if(mdd[index] == "allocate")
+   {
+      return (double)((double)mdc[index] * (double)cycleTimes["Memory"]);
+   }
+   else if(mdd[index] == "printer")
+   {
+      return (double)((double)mdc[index] * (double)cycleTimes["Printer"]);
+   }
+   else
+   {
+      return EXIT_FAILURE;
+   }
+}
+
+// checks the configuration file for any potential errors
+void checkConfigurationFile(ifstream& fin, const char *argv[])
+{
+   // declare variables
+   string s = argv[1];
+   int found = s.find(".conf");
    
-   // prime filestream
-   fin.ignore(256, ':');
-   fin.ignore(256, ':');
-   fin.get(c);
+   // checks extension of configuration file
+   if(found == -1)
+   {
+      throw -1;
+   }
+   // checks for a valid filename (open file)
+   if(fin.is_open() == false)
+   {
+      throw 0;
+   }
+   // checks if the file is empty
+   if(!(fin >> s))
+   {
+      throw -3;
+   }
+}
+
+// checks the metadata file for any potential errors
+void checkMetadataFile(ifstream& fin, string mdfp)
+{
+   // declare variables
+   string s;
+   int found = mdfp.find(".mdf");
    
-   fin >> mdfp;
+   // checks extension of metadata file
+   if(found == -1)
+   {
+      throw -2;
+   }
+   // checks for a valid filename (open file)
+   if(fin.is_open() == false)
+   {
+      throw 0;
+   }
+   // checks if the file is empty
+   if(!(fin >> s))
+   {
+      throw -4;
+   }
 }
 
 // gets the various component cycle times from the configuration file
@@ -73,32 +208,6 @@ void getComponentCycleTimes(ifstream& fin, map<string, int>& cycleTimes)
       // get next component
       fin >> component;
    }
-}
-
-void getSystemMemory(ifstream& fin, int& sm, string& units)
-{
-   // declare variables
-   char c;
-   
-   // read character by character up to left parenthese
-   while(c != LEFT_PARENTHESE)
-   {
-      fin >> c;
-   }
-   
-   // read character by character until right parenthese
-   while(fin.peek() != RIGHT_PARENTHESE)
-   {
-      // read in character and concatenate to string to build unit
-      fin >> c;
-      units += c;
-   }
-   // garbage (left parenthese, colon)
-   fin >> c;
-   fin >> c;
-   
-   // read in memory size
-   fin >> sm;
 }
 
 // gets log type from configuration file
@@ -146,6 +255,521 @@ void getLogTypeAndFilepath(ifstream& fin, string& lfp, int& lt)
    getLogType(fin, lt);
    
    getLogFilepath(fin, lfp);
+}
+
+// gets the filepath of the metadata file from the configuration file
+void getMetadataFilepath(ifstream& fin, string& mdfp)
+{
+   // declare variable
+   char c;
+   
+   // prime filestream
+   fin.ignore(256, ':');
+   fin.ignore(256, ':');
+   fin.get(c);
+   
+   fin >> mdfp;
+}
+
+void getSystemMemory(ifstream& fin, int& sm, string& units)
+{
+   // declare variables
+   char c;
+   
+   // read character by character up to left parenthese
+   while(c != LEFT_PARENTHESE)
+   {
+      fin >> c;
+   }
+   
+   // read character by character until right parenthese
+   while(fin.peek() != RIGHT_PARENTHESE)
+   {
+      // read in character and concatenate to string to build unit
+      fin >> c;
+      units += c;
+   }
+   // garbage (left parenthese, colon)
+   fin >> c;
+   fin >> c;
+   
+   // read in memory size
+   fin >> sm;
+}
+
+// handles all errors given the error code by displaying a corresponding
+// message and terminating the program
+int handleErrors(const int e, map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
+                 vector<int>& mdcy, const string logFilepath, const int logType, const int count, const int sm)
+{
+   if(e == 0)
+   {
+      cout << "ERROR CODE 0; FILE NOT FOUND" << endl;
+      return EXIT_FAILURE;
+   }
+   if(e == -1)
+   {
+      cout << "ERROR CODE -1; INVALID CONFIGURATION FILE EXTENSION" << endl;
+      return EXIT_FAILURE;
+   }
+   if(e == -2)
+   {
+      cout << "ERROR CODE -2; INVALID METADATA FILE EXTENSION" << endl;
+      return EXIT_FAILURE;
+   }
+   if(e == -3)
+   {      
+      cout << "ERROR CODE -3, EMPTY CONFIGURATION FILE" << endl;
+      return EXIT_FAILURE;
+   }
+   if(e == -4)
+   {
+      log(cycleTimes, mdd, mdco, mdcy, logFilepath, logType, count + 2, sm);
+      
+      cout << "ERROR CODE -4, EMPTY METADATA FILE" << endl;
+      return EXIT_FAILURE;
+   }
+   if(e == -5)
+   {
+      log(cycleTimes, mdd, mdco, mdcy, logFilepath, logType, count + 2, sm);
+      
+      cout << "ERROR CODE -5; INVALID(LOWERCASE) OR MISSING METADATA CODE" << endl;
+      return EXIT_FAILURE;
+   }
+   if(e == -6)
+   {
+      log(cycleTimes, mdd, mdco, mdcy, logFilepath, logType, count + 2, sm);
+      
+      cout << "ERROR CODE -6; INVALID(TYPO) OR MISSING METADATA DESCRIPTOR" << endl;
+      return EXIT_FAILURE;
+   }
+   if(e == -7)
+   {
+      log(cycleTimes, mdd, mdco, mdcy, logFilepath, logType, count + 2, sm);
+      
+      cout << "ERROR CODE -7; INVALID(NEGATIVE) OR MISSING METADATA CYCLES" << endl;      
+      return EXIT_FAILURE;
+   }
+}
+
+// checks the logtype variable and uses modular functions to log accordingly
+void log(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
+         vector<int>& mdcy, const string logFilepath, const int logType, 
+         const int count, const int sm)
+{
+   if(logType == MONITOR)
+   {
+      logToMonitor(cycleTimes, mdd, mdco, mdcy,
+                   logFilepath, logType, count, sm);
+   }
+   else if(logType == OUTPUT_FILE)
+   {
+      logToFile(cycleTimes, mdd, mdco, mdcy,
+                logFilepath, logType, count, sm);
+   }
+   else if(logType == MONITOR_AND_OUTPUT_FILE)
+   {
+      logToMonitor(cycleTimes, mdd, mdco, mdcy,
+                   logFilepath, logType, count, sm);
+                   
+      logToFile(cycleTimes, mdd, mdco, mdcy,
+                logFilepath, logType, count, sm);
+   }
+}
+
+// logs all data to the given file in the prescribed example format
+void logToFile(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
+               vector<int>& mdcy, const string logFilepath, const int logType, 
+               const int count, const int sm)
+{
+   // declare variables
+   ofstream fout;
+   high_resolution_clock::time_point t1;
+   high_resolution_clock::time_point t2;
+   duration<double> time_span;
+   
+   // clear and open filestream
+   fout.clear();
+   fout.open(logFilepath);
+   
+   // capture snapshot of starting point in time
+   t1 = chrono::high_resolution_clock::now();
+   
+   // loop through all pieces of metadata in the metadata file
+   for(int i = 0; i < count; i++)
+   {
+      // check metadata code and output data accordingly
+      if(mdco[i] == 'S')
+      {
+         Sleep(calculateSleepTime(cycleTimes, mdd, mdcy, i));
+         
+         t2 = chrono::high_resolution_clock::now();
+         
+         time_span = duration_cast<duration<double>>(t2 - t1);
+         
+         fout << fixed << setprecision(6) << time_span.count() << SPACE << HYPHEN << SPACE;
+         
+         fout << "Simulator program ";
+         
+         if(mdd[i] == "start")
+         {
+            fout << "starting" << endl;
+         }
+         else if(mdd[i] == "end")
+         {
+            fout << "ending";
+         }
+      }
+      
+      // check metadata code and output data accordingly
+      if(mdco[i] == 'A')
+      {
+         if(mdd[i] == "start")
+         {
+            for(int j = 0; j < 2; j++)
+            {
+               Sleep(calculateSleepTime(cycleTimes, mdd, mdcy, i));
+               
+               t2 = high_resolution_clock::now();
+               
+               time_span = duration_cast<duration<double>>(t2 - t1);
+               
+               fout << fixed << setprecision(6) << time_span.count() << SPACE << HYPHEN << SPACE;
+               
+               if(j == 0)
+               {
+                  fout << "OS: preparing process 1" << endl;
+               }
+               else if(j == 1)
+               {
+                  fout << "OS: starting process 1" << endl;
+               }
+            }
+         }
+         else if(mdd[i] == "end")
+         {
+            Sleep(calculateSleepTime(cycleTimes, mdd, mdcy, i));
+            
+            t2 = high_resolution_clock::now();
+            
+            time_span = duration_cast<duration<double>>(t2 - t1);
+            
+            fout << fixed << setprecision(6) << time_span.count() << SPACE << HYPHEN << SPACE;
+            
+            fout << "OS: removing process 1" << endl;
+         }
+      }
+      
+      // check metadata code and output data accordingly
+      if(mdco[i] == 'P')
+      {
+         for(int j = 0; j < 2; j++)
+         {
+            Sleep(calculateSleepTime(cycleTimes, mdd, mdcy, i));
+            
+            t2 = high_resolution_clock::now();
+            
+            time_span = duration_cast<duration<double>>(t2 - t1);
+            
+            fout << fixed << setprecision(6) << time_span.count() << SPACE << HYPHEN << SPACE;
+            
+            if(j == 0)
+            {
+               fout << "Process 1: start processing action" << endl;
+            }
+            else if(j == 1)
+            {
+               fout << "Process 1: end processing action" << endl;
+            }
+         }
+      }
+      
+      // check metadata code and output data accordingly
+      if(mdco[i] == 'M')
+      {
+         if(mdd[i] == "allocate")
+         {
+            for(int j = 0; j < 2; j++)
+            {
+               Sleep(calculateSleepTime(cycleTimes, mdd, mdcy, i));
+               
+               t2 = high_resolution_clock::now();
+               
+               time_span = duration_cast<duration<double>>(t2 - t1);
+               
+               fout << fixed << setprecision(6) << time_span.count() << SPACE << HYPHEN << SPACE;
+               
+               if(j == 0)
+               {
+                  fout << "Process 1: allocating memory" << endl;
+               }
+               else if(j == 1)
+               {
+                  fout << "memory allocated at 0x" 
+                       << setfill('0') << setw(8) 
+                       << allocateMemory(sm) << endl;
+               }
+            }
+         }
+         else if(mdd[i] == "block")
+         {
+            for(int j = 0; j < 2; j++)
+            {
+               Sleep(calculateSleepTime(cycleTimes, mdd, mdcy, i));
+               
+               t2 = high_resolution_clock::now();
+               
+               time_span = duration_cast<duration<double>>(t2 - t1);
+               
+               fout << fixed << setprecision(6) << time_span.count() << SPACE << HYPHEN << SPACE;
+            
+               if(j == 0)
+               {
+                  fout << "Process 1: start memory blocking" << endl;
+               }
+               else if(j == 1)
+               {
+                  fout << "Process 1: end memory blocking" << endl;
+               }
+            }
+         }
+      }
+      
+      // check metadata code and output data accordingly
+      if(mdco[i] == 'O' || mdco[i] == 'I')
+      {
+         for(int j = 0; j < 2; j++)
+         {
+            Sleep(calculateSleepTime(cycleTimes, mdd, mdcy, i));
+            
+            t2 = high_resolution_clock::now();
+            
+            time_span = duration_cast<duration<double>>(t2 - t1);
+            
+            fout << fixed << setprecision(6) << time_span.count() << SPACE << HYPHEN << SPACE;
+            
+            if(j == 0)
+            {
+               fout << "Process 1: start " << mdd[i];
+               if(mdco[i] == 'O')
+               {
+                  fout << " output" << endl;
+               }
+               else if(mdco[i] == 'I')
+               {
+                  fout << " input" << endl;
+               }
+            }
+            else if(j == 1)
+            {
+               fout << "Process 1: end " << mdd[i];
+               if(mdco[i] == 'O')
+               {
+                  fout << " output" << endl;
+               }
+               else if(mdco[i] == 'I')
+               {
+                  fout << " input" << endl;
+               }
+            }
+         }
+      }
+   }
+}
+
+// logs all data to the monitor in the prescribed example format
+void logToMonitor(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
+                  vector<int>& mdcy, const string logFilepath, const int logType, 
+                  const int count, const int sm)
+{
+   // declare variables
+   high_resolution_clock::time_point t1;
+   high_resolution_clock::time_point t2;
+   duration<double> time_span;
+   
+   // capture snapshot of starting point in time
+   t1 = chrono::high_resolution_clock::now();
+   
+   // loop through all pieces of metadata in the metadata file
+   for(int i = 0; i < count; i++)
+   {
+      // check metadata code and output data accordingly
+      if(mdco[i] == 'S')
+      {
+         Sleep(calculateSleepTime(cycleTimes, mdd, mdcy, i));
+         
+         t2 = chrono::high_resolution_clock::now();
+         
+         time_span = duration_cast<duration<double>>(t2 - t1);
+         
+         cout << fixed << setprecision(6) << time_span.count() << SPACE << HYPHEN << SPACE;
+         
+         cout << "Simulator program ";
+         
+         if(mdd[i] == "start")
+         {
+            cout << "starting" << endl;
+         }
+         else if(mdd[i] == "end")
+         {
+            cout << "ending";
+         }
+      }
+      
+      // check metadata code and output data accordingly
+      if(mdco[i] == 'A')
+      {
+         if(mdd[i] == "start")
+         {
+            for(int j = 0; j < 2; j++)
+            {
+               Sleep(calculateSleepTime(cycleTimes, mdd, mdcy, i));
+               
+               t2 = high_resolution_clock::now();
+               
+               time_span = duration_cast<duration<double>>(t2 - t1);
+               
+               cout << fixed << setprecision(6) << time_span.count() << SPACE << HYPHEN << SPACE;
+               
+               if(j == 0)
+               {
+                  cout << "OS: preparing process 1" << endl;
+               }
+               else if(j == 1)
+               {
+                  cout << "OS: starting process 1" << endl;
+               }
+            }
+         }
+         else if(mdd[i] == "end")
+         {
+            Sleep(calculateSleepTime(cycleTimes, mdd, mdcy, i));
+            
+            t2 = high_resolution_clock::now();
+            
+            time_span = duration_cast<duration<double>>(t2 - t1);
+            
+            cout << fixed << setprecision(6) << time_span.count() << SPACE << HYPHEN << SPACE;
+            
+            cout << "OS: removing process 1" << endl;
+         }
+      }
+      
+      // check metadata code and output data accordingly
+      if(mdco[i] == 'P')
+      {
+         for(int j = 0; j < 2; j++)
+         {
+            Sleep(calculateSleepTime(cycleTimes, mdd, mdcy, i));
+            
+            t2 = high_resolution_clock::now();
+            
+            time_span = duration_cast<duration<double>>(t2 - t1);
+            
+            cout << fixed << setprecision(6) << time_span.count() << SPACE << HYPHEN << SPACE;
+            
+            if(j == 0)
+            {
+               cout << "Process 1: start processing action" << endl;
+            }
+            else if(j == 1)
+            {
+               cout << "Process 1: end processing action" << endl;
+            }
+         }
+      }
+      
+      // check metadata code and output data accordingly
+      if(mdco[i] == 'M')
+      {
+         if(mdd[i] == "allocate")
+         {
+            for(int j = 0; j < 2; j++)
+            {
+               Sleep(calculateSleepTime(cycleTimes, mdd, mdcy, i));
+               
+               t2 = high_resolution_clock::now();
+               
+               time_span = duration_cast<duration<double>>(t2 - t1);
+               
+               cout << fixed << setprecision(6) << time_span.count() << SPACE << HYPHEN << SPACE;
+               
+               if(j == 0)
+               {
+                  cout << "Process 1: allocating memory" << endl;
+               }
+               else if(j == 1)
+               {
+                  cout << "memory allocated at 0x" 
+                       << setfill('0') << setw(8) 
+                       << allocateMemory(sm) << endl;
+               }
+            }
+         }
+         else if(mdd[i] == "block")
+         {
+            for(int j = 0; j < 2; j++)
+            {
+               Sleep(calculateSleepTime(cycleTimes, mdd, mdcy, i));
+               
+               t2 = high_resolution_clock::now();
+               
+               time_span = duration_cast<duration<double>>(t2 - t1);
+               
+               cout << fixed << setprecision(6) << time_span.count() << SPACE << HYPHEN << SPACE;
+            
+               if(j == 0)
+               {
+                  cout << "Process 1: start memory blocking" << endl;
+               }
+               else if(j == 1)
+               {
+                  cout << "Process 1: end memory blocking" << endl;
+               }
+            }
+         }
+      }
+      
+      // check metadata code and output data accordingly
+      if(mdco[i] == 'O' || mdco[i] == 'I')
+      {
+         for(int j = 0; j < 2; j++)
+         {
+            Sleep(calculateSleepTime(cycleTimes, mdd, mdcy, i));
+            
+            t2 = high_resolution_clock::now();
+            
+            time_span = duration_cast<duration<double>>(t2 - t1);
+            
+            cout << fixed << setprecision(6) << time_span.count() << SPACE << HYPHEN << SPACE;
+            
+            if(j == 0)
+            {
+               cout << "Process 1: start " << mdd[i];
+               if(mdco[i] == 'O')
+               {
+                  cout << " output" << endl;
+               }
+               else if(mdco[i] == 'I')
+               {
+                  cout << " input" << endl;
+               }
+            }
+            else if(j == 1)
+            {
+               cout << "Process 1: end " << mdd[i];
+               if(mdco[i] == 'O')
+               {
+                  cout << " output" << endl;
+               }
+               else if(mdco[i] == 'I')
+               {
+                  cout << " input" << endl;
+               }
+            }
+         }
+      }
+   }
 }
 
 // uses modular functions to read the entire configuration file
@@ -244,229 +868,5 @@ void readMetadataFile(ifstream& fin, vector<string>& mdd, vector<char>& mdc,
       readOneMeta(fin, mdd, mdc, cycles);
       count++;
       fin >> c;
-   }
-}
-
-// calculate the metadata metrics by "mapping" metadata descriptors to their
-// corresponding components
-int calculateCycleTime(map<string, int>& cycleTimes, vector<string>& mdd, 
-                       vector<int>& mdc, int index)
-{
-   if(mdd[index] == "run")
-   {
-      return mdc[index] * cycleTimes["Processor"];
-   }
-   else if(mdd[index] == "hard drive")
-   {
-      return mdc[index] * cycleTimes["Hard drive"];
-   }
-   else if(mdd[index] == "keyboard")
-   {
-      return mdc[index] * cycleTimes["Keyboard"];
-   }
-   else if(mdd[index] == "mouse")
-   {
-      return mdc[index] * cycleTimes["Mouse"];
-   }
-   else if(mdd[index] == "monitor")
-   {
-      return mdc[index] * cycleTimes["Monitor"];
-   }
-   else if(mdd[index] == "speaker")
-   {
-      return mdc[index] * cycleTimes["Speaker"];
-   }
-   else if(mdd[index] == "block")
-   {
-      return mdc[index] * cycleTimes["Memory"];
-   }
-   else if(mdd[index] == "allocate")
-   {
-      return mdc[index] * cycleTimes["Memory"];
-   }
-   else if(mdd[index] == "printer")
-   {
-      return mdc[index] * cycleTimes["Printer"];
-   }
-   else
-   {
-      return EXIT_FAILURE;
-   }
-}
-
-// logs all data to the monitor in the prescribed example format
-void logToMonitor(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
-                  vector<int>& mdcy, string logFilepath, int logType, int count)
-{
-   
-}
-
-// logs all data to the given file in the prescribed example format
-void logToFile(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
-               vector<int>& mdcy, string logFilepath, int logType, int count)
-{
-   // declare variable
-   ofstream fout;
-   
-   // clear and open filestream
-   fout.clear();
-   fout.open(logFilepath);
-   
-   fout << "Configuration File Data" << endl;   
-   for(auto& x : cycleTimes)
-   {
-      fout << x.first << " = " << x.second << " ms / cycle" << endl;
-   }
-   
-   fout << "Logged to: ";
-   
-   if(logType == MONITOR)
-   {
-      fout << "monitor" << endl << endl;
-   }
-   else if(logType == OUTPUT_FILE)
-   {
-      fout << logFilepath << endl << endl;
-   }
-   else if(logType == MONITOR_AND_OUTPUT_FILE)
-   {
-      fout << "monitor and " << logFilepath << endl << endl;
-   }
-   
-   fout << "Meta-Data Metrics" << endl;
-   for(int index = 2; index < count - 2; index++)
-   {      
-      fout << mdco[index] << LEFT_PARENTHESE
-           << mdd[index] << RIGHT_PARENTHESE
-           << mdcy[index] << SPACE << HYPHEN << SPACE
-           << calculateCycleTime(cycleTimes, mdd, mdcy, index)
-           << endl;
-   }
-}
-
-// checks the logtype variable and uses modular functions to log accordingly
-void log(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
-         vector<int>& mdcy, string logFilepath, int logType, int count)
-{
-   if(logType == MONITOR)
-   {
-      logToMonitor(cycleTimes, mdd, mdco, mdcy,
-                   logFilepath, logType, count);
-   }
-   else if(logType == OUTPUT_FILE)
-   {
-      logToFile(cycleTimes, mdd, mdco, mdcy,
-                logFilepath, logType, count);
-   }
-   else if(logType == MONITOR_AND_OUTPUT_FILE)
-   {
-      logToMonitor(cycleTimes, mdd, mdco, mdcy,
-                   logFilepath, logType, count);
-                   
-      logToFile(cycleTimes, mdd, mdco, mdcy,
-                logFilepath, logType, count);
-   }
-}
-
-// checks the configuration file for any potential errors
-void checkConfigurationFile(ifstream& fin, const char *argv[])
-{
-   // declare variables
-   string s = argv[1];
-   int found = s.find(".conf");
-   
-   // checks extension of configuration file
-   if(found == -1)
-   {
-      throw -1;
-   }
-   // checks for a valid filename (open file)
-   if(fin.is_open() == false)
-   {
-      throw 0;
-   }
-   // checks if the file is empty
-   if(!(fin >> s))
-   {
-      throw -3;
-   }
-}
-
-// checks the metadata file for any potential errors
-void checkMetadataFile(ifstream& fin, string mdfp)
-{
-   // declare variables
-   string s;
-   int found = mdfp.find(".mdf");
-   
-   // checks extension of metadata file
-   if(found == -1)
-   {
-      throw -2;
-   }
-   // checks for a valid filename (open file)
-   if(fin.is_open() == false)
-   {
-      throw 0;
-   }
-   // checks if the file is empty
-   if(!(fin >> s))
-   {
-      throw -4;
-   }
-}
-
-// handles all errors given the error code by displaying a corresponding
-// message and terminating the program
-int handleErrors(int e, map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
-                 vector<int>& mdcy, string logFilepath, int logType, int count)
-{
-   if(e == 0)
-   {
-      cout << "ERROR CODE 0; FILE NOT FOUND" << endl;
-      return EXIT_FAILURE;
-   }
-   if(e == -1)
-   {
-      cout << "ERROR CODE -1; INVALID CONFIGURATION FILE EXTENSION" << endl;
-      return EXIT_FAILURE;
-   }
-   if(e == -2)
-   {
-      cout << "ERROR CODE -2; INVALID METADATA FILE EXTENSION" << endl;
-      return EXIT_FAILURE;
-   }
-   if(e == -3)
-   {      
-      cout << "ERROR CODE -3, EMPTY CONFIGURATION FILE" << endl;
-      return EXIT_FAILURE;
-   }
-   if(e == -4)
-   {
-      log(cycleTimes, mdd, mdco, mdcy, logFilepath, logType, count + 2);
-      
-      cout << "ERROR CODE -4, EMPTY METADATA FILE" << endl;
-      return EXIT_FAILURE;
-   }
-   if(e == -5)
-   {
-      log(cycleTimes, mdd, mdco, mdcy, logFilepath, logType, count + 2);
-      
-      cout << "ERROR CODE -5; INVALID(LOWERCASE) OR MISSING METADATA CODE" << endl;
-      return EXIT_FAILURE;
-   }
-   if(e == -6)
-   {
-      log(cycleTimes, mdd, mdco, mdcy, logFilepath, logType, count + 2);
-      
-      cout << "ERROR CODE -6; INVALID(TYPO) OR MISSING METADATA DESCRIPTOR" << endl;
-      return EXIT_FAILURE;
-   }
-   if(e == -7)
-   {
-      log(cycleTimes, mdd, mdco, mdcy, logFilepath, logType, count + 2);
-      
-      cout << "ERROR CODE -7; INVALID(NEGATIVE) OR MISSING METADATA CYCLES" << endl;      
-      return EXIT_FAILURE;
    }
 }
