@@ -343,61 +343,51 @@ int handleErrors(const int e)
    }
 }
 
-// checks the logtype variable and uses modular functions to log accordingly
-void log(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
-         vector<int>& mdcy, const string logFilepath, const int logType, 
-         const int count, const int sm, const int i,
-         high_resolution_clock::time_point t1, high_resolution_clock::time_point t2,
-         duration<double> time_span)
-{
-   if(logType == MONITOR)
-   {
-      logToMonitor(cycleTimes, mdd, mdco, mdcy,
-                   logFilepath, logType, count, sm, i, t1, t2, time_span);
-   }
-   else if(logType == OUTPUT_FILE)
-   {
-      logToFile(cycleTimes, mdd, mdco, mdcy,
-                logFilepath, logType, count, sm);
-   }
-   else if(logType == MONITOR_AND_OUTPUT_FILE)
-   {
-      logToMonitor(cycleTimes, mdd, mdco, mdcy,
-                   logFilepath, logType, count, sm, i, t1, t2, time_span);
-                   
-      logToFile(cycleTimes, mdd, mdco, mdcy,
-                logFilepath, logType, count, sm);
-   }
-}
-
-// logs all data to the given file in the prescribed example format
-void logToFile(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
-               vector<int>& mdcy, const string logFilepath, const int logType, 
-               const int count, const int sm)
-{
-   
-}
-
 // logs all data to the monitor in the prescribed example format
-void logToMonitor(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
-                  vector<int>& mdcy, const string lfp, const int lt, 
-                  const int count, const int sm, const int i,
-                  high_resolution_clock::time_point t1, high_resolution_clock::time_point t2,
-                  duration<double> time_span)
+void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
+                   vector<int>& mdcy, const string lfp, const int lt, 
+                   const int count, const int sm, const int i,
+                   high_resolution_clock::time_point t1, high_resolution_clock::time_point t2,
+                   duration<double> time_span, ofstream& fout, PCB PCBmain)
 {
-   printTime(t1, t2, time_span);
+   printTime(t1, t2, time_span, lt, fout);
    
    if(mdco[i] == 'S')
    {
-      cout << "Simulator program ";
+      if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
+      {
+         cout << "Simulator program ";
+      }
+      if(lt == OUTPUT_FILE || lt == MONITOR_AND_OUTPUT_FILE)
+      {
+         fout << "Simulator program ";
+      }
       
       if(mdd[i] == "start")
       {
-         cout << "starting" << endl;
+         PCBmain.processState = START;
+         
+         if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
+         {
+            cout << "starting" << endl;
+         }
+         if(lt == OUTPUT_FILE || lt == MONITOR_AND_OUTPUT_FILE)
+         {
+            fout << "starting" << endl;
+         }
       }
       else if(mdd[i] == "end")
       {
-         cout << "ending";
+         PCBmain.processState = EXIT;
+         
+         if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
+         {
+            cout << "ending" << endl;
+         }
+         if(lt == OUTPUT_FILE || lt == MONITOR_AND_OUTPUT_FILE)
+         {
+            fout << "ending";
+         }
       }
    }
    
@@ -406,44 +396,85 @@ void logToMonitor(map<string, int>& cycleTimes, vector<string>& mdd, vector<char
    {
       if(mdd[i] == "start")
       {
+         PCBmain.processState = START;
+         
          for(int j = 0; j < 2; j++)
          {
             if(j == 0)
             {
-               cout << "OS: preparing process 1" << endl;
+               if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
+               {
+                  cout << "OS: preparing process 1" << endl;
+               }
+               if(lt == OUTPUT_FILE || lt == MONITOR_AND_OUTPUT_FILE)
+               {
+                  fout << "OS: preparing process 1" << endl;
+               }
             }
             else if(j == 1)
             {
                Sleep(calculateSleepTime(cycleTimes, mdd, mdcy, i));
                
-               printTime(t1, t2, time_span);
+               printTime(t1, t2, time_span, lt, fout);
                
-               cout << "OS: starting process 1" << endl;
+               if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
+               {
+                  cout << "OS: starting process 1" << endl;
+               }
+               if(lt == OUTPUT_FILE || lt == MONITOR_AND_OUTPUT_FILE)
+               {
+                  fout << "OS: starting process 1" << endl;
+               }
             }
          }
       }
       else if(mdd[i] == "end")
       {
-         cout << "OS: removing process 1" << endl;
+         PCBmain.processState = EXIT;
+         
+         if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
+         {
+            cout << "OS: removing process 1" << endl;
+         }
+         if(lt == OUTPUT_FILE || lt == MONITOR_AND_OUTPUT_FILE)
+         {
+            fout << "OS: removing process 1" << endl;
+         }
       }
    }
    
    // check metadata code and output data accordingly
    if(mdco[i] == 'P')
    {
+      PCBmain.processState = RUNNING;
+      
       for(int j = 0; j < 2; j++)
       {
          if(j == 0)
          {
-            cout << "Process 1: start processing action" << endl;
+            if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
+            {
+               cout << "Process 1: start processing action" << endl;
+            }
+            if(lt == OUTPUT_FILE || lt == MONITOR_AND_OUTPUT_FILE)
+            {
+               fout << "Process 1: start processing action" << endl;
+            }
          }
          else if(j == 1)
          {
             Sleep(calculateSleepTime(cycleTimes, mdd, mdcy, i));
             
-            printTime(t1, t2, time_span);
+            printTime(t1, t2, time_span, lt, fout);
             
-            cout << "Process 1: end processing action" << endl;
+            if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
+            {
+               cout << "Process 1: end processing action" << endl;
+            }
+            if(lt == OUTPUT_FILE || lt == MONITOR_AND_OUTPUT_FILE)
+            {
+               fout << "Process 1: end processing action" << endl;
+            }
          }
       }
    }
@@ -451,23 +482,43 @@ void logToMonitor(map<string, int>& cycleTimes, vector<string>& mdd, vector<char
    // check metadata code and output data accordingly
    if(mdco[i] == 'M')
    {
+      PCBmain.processState = WAITING;
+      
       if(mdd[i] == "allocate")
       {
          for(int j = 0; j < 2; j++)
          {
             if(j == 0)
             {
-               cout << "Process 1: allocating memory" << endl;
+               if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
+               {
+                  cout << "Process 1: allocating memory" << endl;
+               }
+               if(lt == OUTPUT_FILE || lt == MONITOR_AND_OUTPUT_FILE)
+               {
+                  fout << "Process 1: allocating memory" << endl;
+               }
             }
             else if(j == 1)
             {
                Sleep(calculateSleepTime(cycleTimes, mdd, mdcy, i));
                
-               printTime(t1, t2, time_span);
+               printTime(t1, t2, time_span, lt, fout);
                
-               cout << "memory allocated at 0x" 
-                    << setfill('0') << setw(8) 
-                    << allocateMemory(sm) << endl;
+               int temp = allocateMemory(sm);
+               
+               if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
+               {
+                  cout << "memory allocated at 0x" 
+                       << setfill('0') << setw(8) 
+                       << temp << endl;
+               }
+               if(lt == OUTPUT_FILE || lt == MONITOR_AND_OUTPUT_FILE)
+               {
+                  fout << "memory allocated at 0x" 
+                       << setfill('0') << setw(8) 
+                       << temp << endl;
+               }
             }
          }
       }
@@ -477,15 +528,29 @@ void logToMonitor(map<string, int>& cycleTimes, vector<string>& mdd, vector<char
          {            
             if(j == 0)
             {
-               cout << "Process 1: start memory blocking" << endl;
+               if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
+               {
+                  cout << "Process 1: start memory blocking" << endl;
+               }
+               if(lt == OUTPUT_FILE || lt == MONITOR_AND_OUTPUT_FILE)
+               {
+                  fout << "Process 1: start memory blocking" << endl;
+               }
             }
             else if(j == 1)
             {
                Sleep(calculateSleepTime(cycleTimes, mdd, mdcy, i));
                
-               printTime(t1, t2, time_span);
+               printTime(t1, t2, time_span, lt, fout);
                
-               cout << "Process 1: end memory blocking" << endl;
+               if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
+               {
+                  cout << "Process 1: end memory blocking" << endl;
+               }
+               if(lt == OUTPUT_FILE || lt == MONITOR_AND_OUTPUT_FILE)
+               {
+                  fout << "Process 1: end memory blocking" << endl;
+               }
             }
          }
       }
@@ -494,34 +559,80 @@ void logToMonitor(map<string, int>& cycleTimes, vector<string>& mdd, vector<char
    // check metadata code and output data accordingly
    if(mdco[i] == 'O' || mdco[i] == 'I')
    {
+      PCBmain.processState = WAITING;
+      
       for(int j = 0; j < 2; j++)
       {         
          if(j == 0)
          {
-            cout << "Process 1: start " << mdd[i];
+            if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
+            {
+               cout << "Process 1: start " << mdd[i];
+            }
+            if(lt == OUTPUT_FILE || lt == MONITOR_AND_OUTPUT_FILE)
+            {
+               fout << "Process 1: start " << mdd[i];
+            }
+            
             if(mdco[i] == 'O')
             {
-               cout << " output" << endl;
+               if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
+               {
+                  cout << " output" << endl;
+               }
+               if(lt == OUTPUT_FILE || lt == MONITOR_AND_OUTPUT_FILE)
+               {
+                  fout << " output" << endl;
+               }
             }
             else if(mdco[i] == 'I')
             {
-               cout << " input" << endl;
+               if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
+               {
+                  cout << " input" << endl;
+               }
+               if(lt == OUTPUT_FILE || lt == MONITOR_AND_OUTPUT_FILE)
+               {
+                  fout << " input" << endl;
+               }
             }
          }
          else if(j == 1)
          {
             Sleep(calculateSleepTime(cycleTimes, mdd, mdcy, i));
             
-            printTime(t1, t2, time_span);
+            printTime(t1, t2, time_span, lt, fout);
             
-            cout << "Process 1: end " << mdd[i];
+            if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
+            {
+               cout << "Process 1: end " << mdd[i];
+            }
+            if(lt == OUTPUT_FILE || lt == MONITOR_AND_OUTPUT_FILE)
+            {
+               fout << "Process 1: end " << mdd[i];
+            }
+            
             if(mdco[i] == 'O')
             {
-               cout << " output" << endl;
+               if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
+               {
+                  cout << " output" << endl;
+               }
+               if(lt == OUTPUT_FILE || lt == MONITOR_AND_OUTPUT_FILE)
+               {
+                  fout << " output" << endl;
+               }
             }
             else if(mdco[i] == 'I')
             {
-               cout << " input" << endl;
+               if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
+               {
+                  cout << " input" << endl;
+               }
+               if(lt == OUTPUT_FILE || lt == MONITOR_AND_OUTPUT_FILE)
+               {
+                  fout << " input" << endl;
+               }
             }
          }
       }
@@ -535,13 +646,20 @@ void myWait(int ms)
 
 void printTime(high_resolution_clock::time_point t1, 
                high_resolution_clock::time_point t2,
-               duration<double> time_span)
+               duration<double> time_span, const int lt, ofstream& fout)
 {
    t2 = chrono::high_resolution_clock::now();
    
    time_span = duration_cast<duration<double>>(t2 - t1);
    
-   cout << fixed << setprecision(6) << time_span.count() << SPACE << HYPHEN << SPACE;
+   if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
+   {
+      cout << fixed << setprecision(6) << time_span.count() << SPACE << HYPHEN << SPACE;
+   }
+   if(lt == OUTPUT_FILE || lt == MONITOR_AND_OUTPUT_FILE)
+   {
+      fout << fixed << setprecision(6) << time_span.count() << SPACE << HYPHEN << SPACE;
+   }
 }
 
 // uses modular functions to read the entire configuration file
