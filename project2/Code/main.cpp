@@ -20,11 +20,6 @@ const int RUNNING = 2;
 const int WAITING = 3;
 const int EXIT = 4;
 
-struct PCB
-{
-   int processState;
-};
-
 int main(int argc, const char *argv[])
 {
    // declare variables, initialize count and set default logtype (Log to Both)
@@ -71,14 +66,19 @@ int main(int argc, const char *argv[])
       fin.close();
           
       t1 = chrono::high_resolution_clock::now();
+      ofstream fout;
+      
+      fout.clear();
+      fout.open(logFilepath);
+      
       for(int i = 0; i < count; i++)
       {
-         if(metadataCodes[i] == 'O' || metadataCodes[i] == "I")
+         if(metadataCodes[i] == 'O' || metadataCodes[i] == 'I')
          {
             // threading
          }
-         logToMonitor(cycleTimes, metadataDescriptors, metadataCodes, metadataCycles,
-                      logFilepath, logType, count, systemMemory, i, t1, t2, time_span);
+         processAndLog(cycleTimes, metadataDescriptors, metadataCodes, metadataCycles,
+                       logFilepath, logType, count, systemMemory, i, t1, t2, time_span, fout, PCBmain);
       }
    }
    // handle errors if any are thrown
