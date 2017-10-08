@@ -73,16 +73,19 @@ int main(int argc, const char *argv[])
       t1 = chrono::high_resolution_clock::now();
       for(int i = 0; i < count; i++)
       {
-         processAndLog(cycleTimes, metadataDescriptors, metadataCodes, metadataCycles,
-                       logFilepath, logType, count, systemMemory, i, t1, t2, time_span);
+         if(metadataCodes[i] == 'O' || metadataCodes[i] == "I")
+         {
+            // threading
+         }
+         logToMonitor(cycleTimes, metadataDescriptors, metadataCodes, metadataCycles,
+                      logFilepath, logType, count, systemMemory, i, t1, t2, time_span);
       }
    }
    // handle errors if any are thrown
    catch(int e)
    {
       // if error occurs, exit program with error code
-      return handleErrors(e, cycleTimes, metadataDescriptors, metadataCodes,
-                          metadataCycles, logFilepath, logType, count, systemMemory);
+      return handleErrors(e);
    }
    
    // otherwise exit program successfully
