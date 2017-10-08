@@ -4,8 +4,10 @@
 #include<string>
 #include<map>
 #include<vector>
+#include<chrono>
 
 using namespace std;
+using namespace std::chrono;
 
 // function prototypes
 int calculateCycleTime(map<string, int>& cycleTimes, vector<string>& mdd, 
@@ -32,6 +34,15 @@ void logToFile(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& 
 void logToMonitor(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
                   vector<int>& mdcy, const string logFilepath, const int logType, 
                   const int count, const int sm);
+void myWait(int ms);
+void printTime(high_resolution_clock::time_point t1, 
+               high_resolution_clock::time_point t2,
+               duration<double> time_span);
+void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
+                   vector<int>& mdcy, const string logFilepath, const int logType, 
+                   const int count, const int sm, const int i,
+                   high_resolution_clock::time_point t1, high_resolution_clock::time_point t2,
+                   duration<double> time_span);
 void readConfigurationFile(ifstream& fin, map<string, int>& cycleTimes, 
                            string& mdfp, string& lfp, int& lt, int& sm, string& units);
 void readOneMeta(ifstream& fin, vector<string>& mdd, vector<char>& mdc, 
