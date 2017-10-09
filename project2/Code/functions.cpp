@@ -7,8 +7,7 @@
 #include<chrono>
 #include<iomanip>
 #include<thread>
-
-#include<windows.h>
+#include<pthread.h>
 
 #include"functions.hpp"
 #include"MemoryFunction.h"
@@ -33,7 +32,7 @@ const int EXIT = 4;
 
 // calculate the metadata metrics by "mapping" metadata descriptors to their
 // corresponding components
-int calculateCycleTime(map<string, int>& cycleTimes, vector<string>& mdd, 
+int calculateCycleTime(map<string, int>& cycleTimes, vector<string>& mdd,
                        vector<int>& mdc, const int index)
 {
    if(mdd[index] == "run")
@@ -79,7 +78,7 @@ int calculateCycleTime(map<string, int>& cycleTimes, vector<string>& mdd,
 }
 
 // calculate the value for sleep / wait function
-double calculateSleepTime(map<string, int>& cycleTimes, vector<string>& mdd, 
+double calculateSleepTime(map<string, int>& cycleTimes, vector<string>& mdd,
                     vector<int>& mdc, const int index)
 {
    if(mdd[index] == "start" || mdd[index] == "end")
@@ -134,7 +133,7 @@ void checkConfigurationFile(ifstream& fin, const char *argv[])
    // declare variables
    string s = argv[1];
    int found = s.find(".conf");
-   
+
    // checks extension of configuration file
    if(found == -1)
    {
@@ -158,7 +157,7 @@ void checkMetadataFile(ifstream& fin, string mdfp)
    // declare variables
    string s;
    int found = mdfp.find(".mdf");
-   
+
    // checks extension of metadata file
    if(found == -1)
    {
@@ -182,10 +181,10 @@ void getComponentCycleTimes(ifstream& fin, map<string, int>& cycleTimes)
    // declare variables
    string component;
    int cycleTime;
-   
+
    // prime while loop
    fin >> component;
-      
+
    while(component != "System")
    {
       // check if the component is a hard drive
@@ -197,14 +196,14 @@ void getComponentCycleTimes(ifstream& fin, map<string, int>& cycleTimes)
          component.append(" ");
          component.append(drive);
       }
-      
+
       // prime filestream and get the cycle time for the current component
       fin.ignore(256, ':');
       fin >> cycleTime;
-      
+
       // add element to vector
       cycleTimes.emplace(component, cycleTime);
-      
+
       // get next component
       fin >> component;
    }
@@ -215,7 +214,7 @@ void getLogType(ifstream& fin, int& lt)
 {
    // declare variables
    string s, temp;
-   
+
    // build string
    fin >> s;
    s.append(" ");
@@ -224,7 +223,7 @@ void getLogType(ifstream& fin, int& lt)
    s.append(" ");
    fin >> temp;
    s.append(temp);
-   
+
    // check string against possible options to determine log type
    if(s == "Log to Monitor")
    {
@@ -245,7 +244,7 @@ void getLogFilepath(ifstream& fin, string& lfp)
 {
    // prime filestream
    fin.ignore(256, ':');
-   
+
    fin >> lfp;
 }
 
@@ -253,7 +252,7 @@ void getLogFilepath(ifstream& fin, string& lfp)
 void getLogTypeAndFilepath(ifstream& fin, string& lfp, int& lt)
 {
    getLogType(fin, lt);
-   
+
    getLogFilepath(fin, lfp);
 }
 
@@ -262,12 +261,12 @@ void getMetadataFilepath(ifstream& fin, string& mdfp)
 {
    // declare variable
    char c;
-   
+
    // prime filestream
    fin.ignore(256, ':');
    fin.ignore(256, ':');
    fin.get(c);
-   
+
    fin >> mdfp;
 }
 
@@ -275,13 +274,13 @@ void getSystemMemory(ifstream& fin, int& sm, string& units)
 {
    // declare variables
    char c;
-   
+
    // read character by character up to left parenthese
    while(c != LEFT_PARENTHESE)
    {
       fin >> c;
    }
-   
+
    // read character by character until right parenthese
    while(fin.peek() != RIGHT_PARENTHESE)
    {
@@ -292,7 +291,7 @@ void getSystemMemory(ifstream& fin, int& sm, string& units)
    // garbage (left parenthese, colon)
    fin >> c;
    fin >> c;
-   
+
    // read in memory size
    fin >> sm;
 }
@@ -317,12 +316,12 @@ int handleErrors(const int e)
       return EXIT_FAILURE;
    }
    if(e == -3)
-   {      
+   {
       cout << "ERROR CODE -3, EMPTY CONFIGURATION FILE" << endl;
       return EXIT_FAILURE;
    }
    if(e == -4)
-   {  
+   {
       cout << "ERROR CODE -4, EMPTY METADATA FILE" << endl;
       return EXIT_FAILURE;
    }
@@ -338,20 +337,46 @@ int handleErrors(const int e)
    }
    if(e == -7)
    {
-      cout << "ERROR CODE -7; INVALID(NEGATIVE) OR MISSING METADATA CYCLES" << endl;      
+      cout << "ERROR CODE -7; INVALID(NEGATIVE) OR MISSING METADATA CYCLES" << endl;
       return EXIT_FAILURE;
    }
 }
 
-// logs all data to the monitor in the prescribed example format
+// custom wait function using thread library
+void myWait(int ms)
+{
+  this_thread::sleep_for(milliseconds(ms));
+}
+
+// output duration between two points for timestamp
+void printTime(high_resolution_clock::time_point t1,
+               high_resolution_clock::time_point t2,
+               duration<double> time_span, const int lt, ofstream& fout)
+{
+   t2 = chrono::high_resolution_clock::now();
+
+   time_span = duration_cast<duration<double>>(t2 - t1);
+
+   if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
+   {
+      cout << fixed << setprecision(6) << time_span.count() << SPACE << HYPHEN << SPACE;
+   }
+   if(lt == OUTPUT_FILE || lt == MONITOR_AND_OUTPUT_FILE)
+   {
+      fout << fixed << setprecision(6) << time_span.count() << SPACE << HYPHEN << SPACE;
+   }
+}
+
+// logs all data to the monitor in the prescribed example format and changes
+// PCB process state
 void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
-                   vector<int>& mdcy, const string lfp, const int lt, 
+                   vector<int>& mdcy, const string lfp, const int lt,
                    const int count, const int sm, const int i,
                    high_resolution_clock::time_point t1, high_resolution_clock::time_point t2,
                    duration<double> time_span, ofstream& fout, PCB PCBmain)
 {
    printTime(t1, t2, time_span, lt, fout);
-   
+
    if(mdco[i] == 'S')
    {
       if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
@@ -362,11 +387,11 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
       {
          fout << "Simulator program ";
       }
-      
+
       if(mdd[i] == "start")
       {
          PCBmain.processState = START;
-         
+
          if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
          {
             cout << "starting" << endl;
@@ -379,7 +404,7 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
       else if(mdd[i] == "end")
       {
          PCBmain.processState = EXIT;
-         
+
          if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
          {
             cout << "ending" << endl;
@@ -390,14 +415,14 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
          }
       }
    }
-   
+
    // check metadata code and output data accordingly
    if(mdco[i] == 'A')
    {
       if(mdd[i] == "start")
       {
          PCBmain.processState = START;
-         
+
          for(int j = 0; j < 2; j++)
          {
             if(j == 0)
@@ -413,10 +438,10 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
             }
             else if(j == 1)
             {
-               Sleep(calculateSleepTime(cycleTimes, mdd, mdcy, i));
-               
+               myWait(calculateSleepTime(cycleTimes, mdd, mdcy, i));
+
                printTime(t1, t2, time_span, lt, fout);
-               
+
                if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
                {
                   cout << "OS: starting process 1" << endl;
@@ -431,7 +456,7 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
       else if(mdd[i] == "end")
       {
          PCBmain.processState = EXIT;
-         
+
          if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
          {
             cout << "OS: removing process 1" << endl;
@@ -442,12 +467,12 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
          }
       }
    }
-   
+
    // check metadata code and output data accordingly
    if(mdco[i] == 'P')
    {
       PCBmain.processState = RUNNING;
-      
+
       for(int j = 0; j < 2; j++)
       {
          if(j == 0)
@@ -463,10 +488,10 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
          }
          else if(j == 1)
          {
-            Sleep(calculateSleepTime(cycleTimes, mdd, mdcy, i));
-            
+            myWait(calculateSleepTime(cycleTimes, mdd, mdcy, i));
+
             printTime(t1, t2, time_span, lt, fout);
-            
+
             if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
             {
                cout << "Process 1: end processing action" << endl;
@@ -478,12 +503,12 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
          }
       }
    }
-   
+
    // check metadata code and output data accordingly
    if(mdco[i] == 'M')
    {
       PCBmain.processState = WAITING;
-      
+
       if(mdd[i] == "allocate")
       {
          for(int j = 0; j < 2; j++)
@@ -501,22 +526,22 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
             }
             else if(j == 1)
             {
-               Sleep(calculateSleepTime(cycleTimes, mdd, mdcy, i));
-               
+               myWait(calculateSleepTime(cycleTimes, mdd, mdcy, i));
+
                printTime(t1, t2, time_span, lt, fout);
-               
+
                int temp = allocateMemory(sm);
-               
+
                if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
                {
-                  cout << "memory allocated at 0x" 
-                       << setfill('0') << setw(8) 
+                  cout << "memory allocated at 0x"
+                       << setfill('0') << setw(8)
                        << temp << endl;
                }
                if(lt == OUTPUT_FILE || lt == MONITOR_AND_OUTPUT_FILE)
                {
-                  fout << "memory allocated at 0x" 
-                       << setfill('0') << setw(8) 
+                  fout << "memory allocated at 0x"
+                       << setfill('0') << setw(8)
                        << temp << endl;
                }
             }
@@ -525,7 +550,7 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
       else if(mdd[i] == "block")
       {
          for(int j = 0; j < 2; j++)
-         {            
+         {
             if(j == 0)
             {
                if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
@@ -539,10 +564,10 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
             }
             else if(j == 1)
             {
-               Sleep(calculateSleepTime(cycleTimes, mdd, mdcy, i));
-               
+               myWait(calculateSleepTime(cycleTimes, mdd, mdcy, i));
+
                printTime(t1, t2, time_span, lt, fout);
-               
+
                if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
                {
                   cout << "Process 1: end memory blocking" << endl;
@@ -555,14 +580,19 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
          }
       }
    }
-   
+
    // check metadata code and output data accordingly
    if(mdco[i] == 'O' || mdco[i] == 'I')
    {
+      // initialize threads for input / output only
+      pthread_t tid;
+      pthread_attr_t attr;
+      pthread_attr_init(&attr);
+
       PCBmain.processState = WAITING;
-      
+
       for(int j = 0; j < 2; j++)
-      {         
+      {
          if(j == 0)
          {
             if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
@@ -573,7 +603,7 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
             {
                fout << "Process 1: start " << mdd[i];
             }
-            
+
             if(mdco[i] == 'O')
             {
                if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
@@ -599,10 +629,17 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
          }
          else if(j == 1)
          {
-            Sleep(calculateSleepTime(cycleTimes, mdd, mdcy, i));
-            
+            int waitTime = calculateSleepTime(cycleTimes, mdd, mdcy, i);
+
+            void* ptr = &waitTime;
+
+            // create and join threads
+            pthread_create(&tid, &attr, runner, ptr);
+            pthread_join(tid, NULL);
+
+            // calculate and print time
             printTime(t1, t2, time_span, lt, fout);
-            
+
             if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
             {
                cout << "Process 1: end " << mdd[i];
@@ -611,7 +648,7 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
             {
                fout << "Process 1: end " << mdd[i];
             }
-            
+
             if(mdco[i] == 'O')
             {
                if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
@@ -639,70 +676,47 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
    }
 }
 
-void myWait(int ms)
-{
-//    std::this_thread::sleep_for(milliseconds(ms));
-}
-
-void printTime(high_resolution_clock::time_point t1, 
-               high_resolution_clock::time_point t2,
-               duration<double> time_span, const int lt, ofstream& fout)
-{
-   t2 = chrono::high_resolution_clock::now();
-   
-   time_span = duration_cast<duration<double>>(t2 - t1);
-   
-   if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
-   {
-      cout << fixed << setprecision(6) << time_span.count() << SPACE << HYPHEN << SPACE;
-   }
-   if(lt == OUTPUT_FILE || lt == MONITOR_AND_OUTPUT_FILE)
-   {
-      fout << fixed << setprecision(6) << time_span.count() << SPACE << HYPHEN << SPACE;
-   }
-}
-
 // uses modular functions to read the entire configuration file
 void readConfigurationFile(ifstream& fin, map<string, int>& cycleTimes,
                            string& mdfp, string& lfp, int& lt, int& sm, string& units)
 {
    getMetadataFilepath(fin, mdfp);
-   
+
    getComponentCycleTimes(fin, cycleTimes);
-   
+
    getSystemMemory(fin, sm, units);
-   
+
    getLogTypeAndFilepath(fin, lfp, lt);
 }
 
 // reads in a single piece of metadata from the metadata file
-void readOneMeta(ifstream& fin, vector<string>& mdd, vector<char>& mdc, 
+void readOneMeta(ifstream& fin, vector<string>& mdd, vector<char>& mdc,
                  vector<int>& cycles)
 {
    // declare variables
    string mddTemp;
    char mdcTemp, lp, rp, mddAppend;
    int cyclesTemp = -999;
-   
+
    // get metadata code
    fin >> mdcTemp >> lp;
-   
+
    // check if the metadata code is lowercase or an invalid character
    if(mdcTemp < 'A' || mdcTemp > 'Z')
    {
       throw -5;
    }
-   
+
    // add element to vector
    mdc.push_back(mdcTemp);
-   
+
    // prime while loop
    fin >> mddAppend;
    while(mddAppend != ')')
    {
-      // construct the metadata descriptor string character by character 
+      // construct the metadata descriptor string character by character
       mddTemp += mddAppend;
-      
+
       // check if the component is a hard drive
       if(mddTemp == "hard")
       {
@@ -710,7 +724,7 @@ void readOneMeta(ifstream& fin, vector<string>& mdd, vector<char>& mdc,
       }
       fin >> mddAppend;
    }
-   
+
    // check for an invalid metadata descriptor
    if(!(mddTemp == "start" || mddTemp == "end" || mddTemp == "run" ||
       mddTemp == "hard drive" || mddTemp == "keyboard" || mddTemp == "printer" ||
@@ -719,44 +733,52 @@ void readOneMeta(ifstream& fin, vector<string>& mdd, vector<char>& mdc,
    {
       throw -6;
    }
-   
+
    // add element to vector
    mdd.push_back(mddTemp);
    rp = mddAppend;
-   
+
    // check if the number of cycles is missing
    if(fin.peek() == ';')
    {
       throw -7;
    }
-   
+
    fin >> cyclesTemp;
-   
+
    // check if the number of cycles is negative
    if(cyclesTemp < 0)
    {
       throw -7;
    }
-   
+
    // add element to vector
    cycles.push_back(cyclesTemp);
 }
 
 // uses a modular function to read the entire metadata file
-void readMetadataFile(ifstream& fin, vector<string>& mdd, vector<char>& mdc, 
+void readMetadataFile(ifstream& fin, vector<string>& mdd, vector<char>& mdc,
                       vector<int>& cycles, int& count)
 {
    // declare variables
    char c;
    count = 0;
-   
+
    // prime filestream
    fin.ignore(256, NEWLINE);
-   
+
    while(c != '.')
    {
       readOneMeta(fin, mdd, mdc, cycles);
       count++;
       fin >> c;
    }
+}
+
+// threading runner function
+void* runner(void* total)
+{
+   int* a = (int*)total;
+   myWait(*a);
+   pthread_exit(NULL);
 }
