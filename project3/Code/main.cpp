@@ -25,7 +25,8 @@ int main(int argc, const char *argv[])
    vector<char> metadataCodes;
    vector<string> metadataDescriptors;
    vector<int> metadataCycles;
-   int systemMemory, count = 0, logType = 2;
+   int systemMemory, memoryBlockSize, count = 0, logType = 2;
+   int hardDriveQuantity, printerQuantity;
 
    // struct object
    PCB PCBmain;
@@ -46,7 +47,8 @@ int main(int argc, const char *argv[])
 
       // process configuration file
       readConfigurationFile(fin, cycleTimes, metadataFilepath, logFilepath, logType,
-                            systemMemory, units);
+                            systemMemory, units, memoryBlockSize, hardDriveQuantity,
+                            printerQuantity);
 
       // close configuration file
       fin.close();
