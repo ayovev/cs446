@@ -23,6 +23,7 @@ const char NEWLINE = '\n';
 const char LEFT_PARENTHESE = '(';
 const char RIGHT_PARENTHESE = ')';
 const char HYPHEN = '-';
+const char COLON = ':';
 
 const int START = 0;
 const int READY = 1;
@@ -209,6 +210,23 @@ void getComponentCycleTimes(ifstream& fin, map<string, int>& cycleTimes)
    }
 }
 
+void getHarddriveQuantity(ifstream& fin, int& hdq)
+{
+  // declare variable
+  char c;
+
+  fin >> c;
+
+  // read character by character up to colon
+  while(c != COLON)
+  {
+     fin >> c;
+  }
+
+  // read in memory block size
+  fin >> hdq;
+}
+
 // gets log type from configuration file
 void getLogType(ifstream& fin, int& lt)
 {
@@ -270,9 +288,43 @@ void getMetadataFilepath(ifstream& fin, string& mdfp)
    fin >> mdfp;
 }
 
+void getMemoryBlockSize(ifstream& fin, int& mbs)
+{
+  // declare variable
+  char c;
+
+  fin >> c;
+
+  // read character by character up to colon
+  while(c != COLON)
+  {
+     fin >> c;
+  }
+
+  // read in memory block size
+  fin >> mbs;
+}
+
+void getPrinterQuantity(ifstream& fin, int& pq)
+{
+  // declare variable
+  char c;
+
+  fin >> c;
+
+  // read character by character up to colon
+  while(c != COLON)
+  {
+     fin >> c;
+  }
+
+  // read in memory block size
+  fin >> pq;
+}
+
 void getSystemMemory(ifstream& fin, int& sm, string& units)
 {
-   // declare variables
+   // declare variable
    char c;
 
    // read character by character up to left parenthese
@@ -678,13 +730,20 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
 
 // uses modular functions to read the entire configuration file
 void readConfigurationFile(ifstream& fin, map<string, int>& cycleTimes,
-                           string& mdfp, string& lfp, int& lt, int& sm, string& units)
+                           string& mdfp, string& lfp, int& lt, int& sm, string& units,
+                           int& mbs, int& hdq, int& pq)
 {
    getMetadataFilepath(fin, mdfp);
 
    getComponentCycleTimes(fin, cycleTimes);
 
    getSystemMemory(fin, sm, units);
+
+   getMemoryBlockSize(fin, mbs);
+
+   getPrinterQuantity(fin ,pq);
+
+   getHarddriveQuantity(fin, hdq);
 
    getLogTypeAndFilepath(fin, lfp, lt);
 }

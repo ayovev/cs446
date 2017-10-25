@@ -22,10 +22,13 @@ double calculateSleepTime(map<string, int>& cycleTimes, vector<string>& mdd,
 void checkConfigurationFile(ifstream& fin, const char *argv[]);
 void checkMetadataFile(ifstream& fin, const string mdfp);
 void getComponentCycleTimes(ifstream& fin, map<string, int>& cycleTimes);
+void getHarddriveQuantity(ifstream& fin, int& hdq);
 void getLogType(ifstream& fin, int& lt);
 void getLogFilepath(ifstream& fin, string& lfp);
 void getLogTypeAndFilepath(ifstream& fin, string& lfp, int& lt);
 void getMetadataFilepath(ifstream& fin, string& mdfp);
+void getMemoryBlockSize(ifstream& fin, int& mbs);
+void getPrinterQuantity(ifstream& fin, int& pq);
 void getSystemMemory(ifstream& fin, int& sm, string& units);
 int handleErrors(const int e);
 void myWait(int ms);
@@ -38,7 +41,8 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
                    high_resolution_clock::time_point t1, high_resolution_clock::time_point t2,
                    duration<double> time_span, ofstream& fout, PCB PCBmain);
 void readConfigurationFile(ifstream& fin, map<string, int>& cycleTimes,
-                           string& mdfp, string& lfp, int& lt, int& sm, string& units);
+                           string& mdfp, string& lfp, int& lt, int& sm, string& units,
+                           int& mbs, int& hdq, int& pq);
 void readOneMeta(ifstream& fin, vector<string>& mdd, vector<char>& mdc,
                  vector<int>& cycles);
 void readMetadataFile(ifstream& fin, vector<string>& mdd, vector<char>& mdc,
