@@ -31,6 +31,7 @@ void getMemoryBlockSize(ifstream& fin, int& mbs);
 void getPrinterQuantity(ifstream& fin, int& pq);
 void getSystemMemory(ifstream& fin, int& sm, string& units);
 int handleErrors(const int e);
+int memoryFunction(const int sm, const int mbs, const int multiplier);
 void myWait(int ms);
 void printTime(high_resolution_clock::time_point t1,
                high_resolution_clock::time_point t2,
@@ -39,7 +40,8 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
                    vector<int>& mdcy, const string logFilepath, const int logType,
                    const int count, const int sm, const int i,
                    high_resolution_clock::time_point t1, high_resolution_clock::time_point t2,
-                   duration<double> time_span, ofstream& fout, PCB PCBmain);
+                   duration<double> time_span, ofstream& fout, PCB PCBmain,
+                   const int mbs, int& mult);
 void readConfigurationFile(ifstream& fin, map<string, int>& cycleTimes,
                            string& mdfp, string& lfp, int& lt, int& sm, string& units,
                            int& mbs, int& hdq, int& pq);

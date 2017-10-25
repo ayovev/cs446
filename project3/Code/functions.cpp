@@ -400,6 +400,11 @@ void myWait(int ms)
   this_thread::sleep_for(milliseconds(ms));
 }
 
+int memoryFunction(const int sm, const int mbs, const int multiplier)
+{
+   return (multiplier * mbs) % sm;
+}
+
 // output duration between two points for timestamp
 void printTime(high_resolution_clock::time_point t1,
                high_resolution_clock::time_point t2,
@@ -425,7 +430,8 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
                    vector<int>& mdcy, const string lfp, const int lt,
                    const int count, const int sm, const int i,
                    high_resolution_clock::time_point t1, high_resolution_clock::time_point t2,
-                   duration<double> time_span, ofstream& fout, PCB PCBmain)
+                   duration<double> time_span, ofstream& fout, PCB PCBmain,
+                   const int mbs, int& mult)
 {
    printTime(t1, t2, time_span, lt, fout);
 
@@ -559,6 +565,8 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
    // check metadata code and output data accordingly
    if(mdco[i] == 'M')
    {
+      mult++;
+
       PCBmain.processState = WAITING;
 
       if(mdd[i] == "allocate")
@@ -582,7 +590,7 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
 
                printTime(t1, t2, time_span, lt, fout);
 
-               int temp = allocateMemory(sm);
+               int temp = memoryFunction(sm, mbs, mult);
 
                if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
                {
