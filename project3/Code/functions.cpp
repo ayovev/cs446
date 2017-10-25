@@ -432,7 +432,8 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
                    const int count, const int sm, const int i,
                    high_resolution_clock::time_point t1, high_resolution_clock::time_point t2,
                    duration<double> time_span, ofstream& fout, PCB PCBmain,
-                   const int mbs, int& mult, sem_t semaphore)
+                   const int mbs, int& mult, sem_t semaphore, const int hdq, const int pq,
+                   int& hdc, int& pc)
 {
    printTime(t1, t2, time_span, lt, fout);
 
@@ -671,22 +672,82 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
             {
                if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
                {
-                  cout << " output" << endl;
+                  if(mdd[i] == "monitor")
+                  {
+                     cout << " output";
+                  }
+                  if(mdd[i] == "hard drive")
+                  {
+                     cout << " output on ";
+                     cout << "HDD " << hdc % hdq;
+                     hdc++;
+                  }
+                  if(mdd[i] == "printer")
+                  {
+                     cout << " output on ";
+                     cout << "PRNTR " << pc % pq;
+                     pc++;
+                  }
+                  cout << endl;
                }
                if(lt == OUTPUT_FILE || lt == MONITOR_AND_OUTPUT_FILE)
                {
-                  fout << " output" << endl;
+                  if(mdd[i] == "monitor")
+                  {
+                     fout << " output";
+                  }
+                  if(mdd[i] == "hard drive")
+                  {
+                     fout << " output on ";
+                     fout << "HDD " << hdc % hdq;
+                  }
+                  if(mdd[i] == "printer")
+                  {
+                     fout << " output on ";
+                     fout << "PRNTR " << pc % pq;
+                  }
+                  fout << endl;
                }
             }
             else if(mdco[i] == 'I')
             {
                if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
                {
-                  cout << " input" << endl;
+                  if(mdd[i] == "monitor")
+                  {
+                     cout << " input";
+                  }
+                  if(mdd[i] == "hard drive")
+                  {
+                     cout << " input on ";
+                     cout << "HDD " << hdc % hdq;
+                     hdc++;
+                  }
+                  if(mdd[i] == "printer")
+                  {
+                     cout << " input on ";
+                     cout << "PRNTR " << pc % pq;
+                     pc++;
+                  }
+                  cout << endl;
                }
                if(lt == OUTPUT_FILE || lt == MONITOR_AND_OUTPUT_FILE)
                {
-                  fout << " input" << endl;
+                  if(mdd[i] == "monitor")
+                  {
+                     fout << " input";
+                  }
+                  if(mdd[i] == "hard drive")
+                  {
+                     fout << " input on ";
+                     fout << "HDD " << hdc % hdq;
+                  }
+                  if(mdd[i] == "printer")
+                  {
+                     fout << " input on ";
+                     fout << "PRNTR " << pc % pq;
+                  }
+                  fout << endl;
                }
             }
          }

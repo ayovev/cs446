@@ -28,6 +28,7 @@ int main(int argc, const char *argv[])
    vector<int> metadataCycles;
    int systemMemory, memoryBlockSize, count = 0, logType = 2;
    int hardDriveQuantity, printerQuantity, multiplier = 0;
+   int hardDriveCounter = 0, printerCounter = 0;
 
    // struct object
    PCB PCBmain;
@@ -85,7 +86,8 @@ int main(int argc, const char *argv[])
       {
          processAndLog(cycleTimes, metadataDescriptors, metadataCodes, metadataCycles,
                        logFilepath, logType, count, systemMemory, i, t1, t2, time_span, fout, PCBmain,
-                       memoryBlockSize, multiplier, semaphore);
+                       memoryBlockSize, multiplier, semaphore, hardDriveQuantity, printerQuantity,
+                       hardDriveCounter, printerCounter);
       }
    }
    // handle errors if any are thrown

@@ -37,11 +37,12 @@ void printTime(high_resolution_clock::time_point t1,
                high_resolution_clock::time_point t2,
                duration<double> time_span, const int logType, ofstream& fout);
 void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
-                   vector<int>& mdcy, const string logFilepath, const int logType,
+                   vector<int>& mdcy, const string lfp, const int lt,
                    const int count, const int sm, const int i,
                    high_resolution_clock::time_point t1, high_resolution_clock::time_point t2,
                    duration<double> time_span, ofstream& fout, PCB PCBmain,
-                   const int mbs, int& mult, sem_t semaphore);
+                   const int mbs, int& mult, sem_t semaphore, const int hdq, const int pq,
+                   int& hdc, int& pc);
 void readConfigurationFile(ifstream& fin, map<string, int>& cycleTimes,
                            string& mdfp, string& lfp, int& lt, int& sm, string& units,
                            int& mbs, int& hdq, int& pq);
