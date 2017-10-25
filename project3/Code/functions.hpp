@@ -41,7 +41,7 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
                    const int count, const int sm, const int i,
                    high_resolution_clock::time_point t1, high_resolution_clock::time_point t2,
                    duration<double> time_span, ofstream& fout, PCB PCBmain,
-                   const int mbs, int& mult);
+                   const int mbs, int& mult, sem_t semaphore);
 void readConfigurationFile(ifstream& fin, map<string, int>& cycleTimes,
                            string& mdfp, string& lfp, int& lt, int& sm, string& units,
                            int& mbs, int& hdq, int& pq);

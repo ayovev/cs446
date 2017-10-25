@@ -8,6 +8,7 @@
 #include<iomanip>
 #include<thread>
 #include<pthread.h>
+#include<semaphore.h>
 
 #include"functions.hpp"
 #include"MemoryFunction.h"
@@ -30,6 +31,12 @@ int main(int argc, const char *argv[])
 
    // struct object
    PCB PCBmain;
+
+   // semaphore object
+   sem_t semaphore;
+
+   // initialize semaphore
+   sem_init(&semaphore, 0, 1);
 
    // timing variables
    high_resolution_clock::time_point t1;
@@ -78,7 +85,7 @@ int main(int argc, const char *argv[])
       {
          processAndLog(cycleTimes, metadataDescriptors, metadataCodes, metadataCycles,
                        logFilepath, logType, count, systemMemory, i, t1, t2, time_span, fout, PCBmain,
-                       memoryBlockSize, multiplier);
+                       memoryBlockSize, multiplier, semaphore);
       }
    }
    // handle errors if any are thrown

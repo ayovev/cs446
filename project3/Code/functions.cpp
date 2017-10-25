@@ -8,6 +8,7 @@
 #include<iomanip>
 #include<thread>
 #include<pthread.h>
+#include<semaphore.h>
 
 #include"functions.hpp"
 #include"MemoryFunction.h"
@@ -431,7 +432,7 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
                    const int count, const int sm, const int i,
                    high_resolution_clock::time_point t1, high_resolution_clock::time_point t2,
                    duration<double> time_span, ofstream& fout, PCB PCBmain,
-                   const int mbs, int& mult)
+                   const int mbs, int& mult, sem_t semaphore)
 {
    printTime(t1, t2, time_span, lt, fout);
 
@@ -649,6 +650,8 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
       pthread_attr_t attr;
       pthread_attr_init(&attr);
 
+      sem_wait(&semaphore);
+
       PCBmain.processState = WAITING;
 
       for(int j = 0; j < 2; j++)
@@ -733,6 +736,7 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
             }
          }
       }
+      sem_post(&semaphore);
    }
 }
 
