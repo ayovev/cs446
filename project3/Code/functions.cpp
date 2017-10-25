@@ -569,12 +569,11 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
    // check metadata code and output data accordingly
    if(mdco[i] == 'M')
    {
-      mult++;
-
       PCBmain.processState = WAITING;
 
       if(mdd[i] == "allocate")
       {
+         mult++;
          for(int j = 0; j < 2; j++)
          {
             if(j == 0)
@@ -600,13 +599,13 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
                {
                   cout << "memory allocated at 0x"
                        << setfill('0') << setw(8)
-                       << temp << endl;
+                       << hex << temp << endl;
                }
                if(lt == OUTPUT_FILE || lt == MONITOR_AND_OUTPUT_FILE)
                {
                   fout << "memory allocated at 0x"
                        << setfill('0') << setw(8)
-                       << temp << endl;
+                       << hex << temp << endl;
                }
             }
          }
