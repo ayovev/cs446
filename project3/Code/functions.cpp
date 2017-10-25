@@ -233,6 +233,12 @@ void getLogType(ifstream& fin, int& lt)
 {
    // declare variables
    string s, temp;
+   char c;
+   
+   while(c != COLON)
+   {
+      fin >> c;
+   }
 
    // build string
    fin >> s;
@@ -573,7 +579,6 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
 
       if(mdd[i] == "allocate")
       {
-         mult++;
          for(int j = 0; j < 2; j++)
          {
             if(j == 0)
@@ -609,6 +614,7 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
                }
             }
          }
+         mult++;
       }
       else if(mdd[i] == "block")
       {
