@@ -73,9 +73,12 @@ int main(int argc, const char *argv[])
       // close metadata file
       fin.close();
 
-      // clear and open output filestream
-      fout.clear();
-      fout.open(logFilepath);
+      if(logType == 1 || logType == 2)
+      {
+         // clear and open output filestream
+         fout.clear();
+         fout.open(logFilepath);
+      }
 
       // start time point
       t1 = chrono::high_resolution_clock::now();
