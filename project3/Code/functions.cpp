@@ -11,7 +11,6 @@
 #include<semaphore.h>
 
 #include"functions.hpp"
-#include"MemoryFunction.h"
 
 using namespace std;
 using namespace std::chrono;
