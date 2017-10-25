@@ -215,6 +215,7 @@ void getHarddriveQuantity(ifstream& fin, int& hdq)
   // declare variable
   char c;
 
+  // prime while loop
   fin >> c;
 
   // read character by character up to colon
@@ -223,7 +224,7 @@ void getHarddriveQuantity(ifstream& fin, int& hdq)
      fin >> c;
   }
 
-  // read in memory block size
+  // read in hard drive quantity
   fin >> hdq;
 }
 
@@ -293,6 +294,7 @@ void getMemoryBlockSize(ifstream& fin, int& mbs)
   // declare variable
   char c;
 
+  // prime while loop
   fin >> c;
 
   // read character by character up to colon
@@ -310,6 +312,7 @@ void getPrinterQuantity(ifstream& fin, int& pq)
   // declare variable
   char c;
 
+  // prime while loop
   fin >> c;
 
   // read character by character up to colon
@@ -318,7 +321,7 @@ void getPrinterQuantity(ifstream& fin, int& pq)
      fin >> c;
   }
 
-  // read in memory block size
+  // read in printer quantity
   fin >> pq;
 }
 
@@ -650,8 +653,10 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
       pthread_attr_t attr;
       pthread_attr_init(&attr);
 
+      // lock critical section using semaphore
       sem_wait(&semaphore);
 
+      // set PCB state
       PCBmain.processState = WAITING;
 
       for(int j = 0; j < 2; j++)
@@ -796,6 +801,7 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
             }
          }
       }
+      // unlock semaphore after breaking out of critical section
       sem_post(&semaphore);
    }
 }
