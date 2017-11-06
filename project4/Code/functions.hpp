@@ -26,7 +26,6 @@ void getCPUSchedulingCode(ifstream& fin, string& sc);
 void getHarddriveQuantity(ifstream& fin, int& hdq);
 void getLogType(ifstream& fin, int& lt);
 void getLogFilepath(ifstream& fin, string& lfp);
-// void getLogTypeAndFilepath(ifstream& fin, string& lfp, int& lt);
 void getMetadataFilepath(ifstream& fin, string& mdfp);
 void getMemoryBlockSize(ifstream& fin, int& mbs);
 void getPrinterQuantity(ifstream& fin, int& pq);
