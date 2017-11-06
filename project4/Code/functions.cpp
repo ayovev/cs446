@@ -210,6 +210,24 @@ void getComponentCycleTimes(ifstream& fin, map<string, int>& cycleTimes)
    }
 }
 
+void getCPUSchedulingCode(ifstream& fin, string& sc)
+{
+   // declare variable
+   char c;
+   
+   // prime while loop
+   fin >> c;
+   
+   // read character by character up to colon
+   while(c != COLON)
+   {
+      fin >> c;
+   }
+
+   // read in scheduling code quantity
+   fin >> sc;
+}
+
 void getHarddriveQuantity(ifstream& fin, int& hdq)
 {
   // declare variable
@@ -273,14 +291,6 @@ void getLogFilepath(ifstream& fin, string& lfp)
    fin >> lfp;
 }
 
-// uses modular functions to get log type and filepath from configuration file
-void getLogTypeAndFilepath(ifstream& fin, string& lfp, int& lt)
-{
-   getLogType(fin, lt);
-
-   getLogFilepath(fin, lfp);
-}
-
 // gets the filepath of the metadata file from the configuration file
 void getMetadataFilepath(ifstream& fin, string& mdfp)
 {
@@ -329,6 +339,24 @@ void getPrinterQuantity(ifstream& fin, int& pq)
 
   // read in printer quantity
   fin >> pq;
+}
+
+void getProcessorQuantum(ifstream& fin, int& pqn)
+{
+   // declare variable
+   char c;
+   
+   // prime while loop
+   fin >> c;
+   
+   // read character by character up to colon
+   while(c != COLON)
+   {
+      fin >> c;
+   }
+
+   // read in processor quantum number
+   fin >> pqn;
 }
 
 void getSystemMemory(ifstream& fin, int& sm, string& units)
@@ -814,9 +842,13 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
 // uses modular functions to read the entire configuration file
 void readConfigurationFile(ifstream& fin, map<string, int>& cycleTimes,
                            string& mdfp, string& lfp, int& lt, int& sm, string& units,
-                           int& mbs, int& hdq, int& pq)
+                           int& mbs, int& hdq, int& pq, int& pqn, string& sc)
 {
    getMetadataFilepath(fin, mdfp);
+   
+   getProcessorQuantum(fin, pqn);
+   
+   getCPUSchedulingCode(fin, sc);
 
    getComponentCycleTimes(fin, cycleTimes);
 
@@ -828,7 +860,9 @@ void readConfigurationFile(ifstream& fin, map<string, int>& cycleTimes,
 
    getHarddriveQuantity(fin, hdq);
 
-   getLogTypeAndFilepath(fin, lfp, lt);
+   getLogType(fin, lt);
+
+   getLogFilepath(fin, lfp);
 }
 
 // reads in a single piece of metadata from the metadata file
