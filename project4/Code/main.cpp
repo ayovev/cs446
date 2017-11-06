@@ -20,7 +20,7 @@ int main(int argc, const char *argv[])
    // declare variables, initialize count and set default logtype (Log to Both)
    ifstream fin;
    ofstream fout;
-   string metadataFilepath, logFilepath, units;
+   string metadataFilepath, logFilepath;
    map<string, int> cycleTimes;
    vector<char> metadataCodes;
    vector<string> metadataDescriptors;
@@ -57,7 +57,7 @@ int main(int argc, const char *argv[])
 
       // process configuration file
       readConfigurationFile(fin, cycleTimes, metadataFilepath, logFilepath, logType,
-                            systemMemory, units, memoryBlockSize, hardDriveQuantity,
+                            systemMemory, memoryBlockSize, hardDriveQuantity,
                             printerQuantity, processorQuantumNumber, schedulingCode);
 
       // close configuration file
@@ -90,7 +90,7 @@ int main(int argc, const char *argv[])
       for(int i = 0; i < count; i++)
       {
          processAndLog(cycleTimes, metadataDescriptors, metadataCodes, metadataCycles,
-                       logFilepath, logType, count, systemMemory, i, t1, t2, time_span, fout, PCBmain,
+                       logType, systemMemory, i, t1, t2, time_span, fout, PCBmain,
                        memoryBlockSize, multiplier, semaphore, hardDriveQuantity, printerQuantity,
                        hardDriveCounter, printerCounter);
       }
