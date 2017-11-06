@@ -228,22 +228,22 @@ void getCPUSchedulingCode(ifstream& fin, string& sc)
    fin >> sc;
 }
 
-void getHarddriveQuantity(ifstream& fin, int& hdq)
+void getIntegerData(ifstream& fin, int& id)
 {
-  // declare variable
-  char c;
+   // declare variable
+   char c;
 
-  // prime while loop
-  fin >> c;
+   // prime while loop
+   fin >> c;
 
-  // read character by character up to colon
-  while(c != COLON)
-  {
-     fin >> c;
-  }
+   // read character by character up to colon
+   while(c != COLON)
+   {
+      fin >> c;
+   }
 
-  // read in hard drive quantity
-  fin >> hdq;
+   // read in integer value
+   fin >> id;
 }
 
 // gets log type from configuration file
@@ -303,86 +303,6 @@ void getMetadataFilepath(ifstream& fin, string& mdfp)
    fin.get(c);
 
    fin >> mdfp;
-}
-
-void getMemoryBlockSize(ifstream& fin, int& mbs)
-{
-  // declare variable
-  char c;
-
-  // prime while loop
-  fin >> c;
-
-  // read character by character up to colon
-  while(c != COLON)
-  {
-     fin >> c;
-  }
-
-  // read in memory block size
-  fin >> mbs;
-}
-
-void getPrinterQuantity(ifstream& fin, int& pq)
-{
-  // declare variable
-  char c;
-
-  // prime while loop
-  fin >> c;
-
-  // read character by character up to colon
-  while(c != COLON)
-  {
-     fin >> c;
-  }
-
-  // read in printer quantity
-  fin >> pq;
-}
-
-void getProcessorQuantum(ifstream& fin, int& pqn)
-{
-   // declare variable
-   char c;
-   
-   // prime while loop
-   fin >> c;
-   
-   // read character by character up to colon
-   while(c != COLON)
-   {
-      fin >> c;
-   }
-
-   // read in processor quantum number
-   fin >> pqn;
-}
-
-void getSystemMemory(ifstream& fin, int& sm, string& units)
-{
-   // declare variable
-   char c;
-
-   // read character by character up to left parenthese
-   while(c != LEFT_PARENTHESE)
-   {
-      fin >> c;
-   }
-
-   // read character by character until right parenthese
-   while(fin.peek() != RIGHT_PARENTHESE)
-   {
-      // read in character and concatenate to string to build unit
-      fin >> c;
-      units += c;
-   }
-   // garbage (left parenthese, colon)
-   fin >> c;
-   fin >> c;
-
-   // read in memory size
-   fin >> sm;
 }
 
 // handles all errors given the error code by displaying a corresponding
@@ -464,8 +384,8 @@ void printTime(high_resolution_clock::time_point t1,
 // logs all data to the monitor in the prescribed example format and changes
 // PCB process state
 void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
-                   vector<int>& mdcy, const string lfp, const int lt,
-                   const int count, const int sm, const int i,
+                   vector<int>& mdcy, const int lt,
+                   const int sm, const int i,
                    high_resolution_clock::time_point t1, high_resolution_clock::time_point t2,
                    duration<double> time_span, ofstream& fout, PCB PCBmain,
                    const int mbs, int& mult, sem_t semaphore, const int hdq, const int pq,
@@ -841,27 +761,37 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
 
 // uses modular functions to read the entire configuration file
 void readConfigurationFile(ifstream& fin, map<string, int>& cycleTimes,
-                           string& mdfp, string& lfp, int& lt, int& sm, string& units,
-                           int& mbs, int& hdq, int& pq, int& pqn, string& sc)
+                           string& mdfp, string& lfp, int& lt, int& sm,
+                           int& mbs, int& pq, int& sq, int& pqn, string& sc)
 {
+   // get metadata filepath
    getMetadataFilepath(fin, mdfp);
    
-   getProcessorQuantum(fin, pqn);
+   // get processor quantum number
+   getIntegerData(fin, pqn);
    
+   // get CPU scheduling code
    getCPUSchedulingCode(fin, sc);
 
+   // get cycle times for each component
    getComponentCycleTimes(fin, cycleTimes);
+   
+   // get system memory size
+   getIntegerData(fin, sm);
 
-   getSystemMemory(fin, sm, units);
+   // get memory block size
+   getIntegerData(fin, mbs);
 
-   getMemoryBlockSize(fin, mbs);
+   // get printer quantity
+   getIntegerData(fin, pq);
 
-   getPrinterQuantity(fin ,pq);
+   // get speaker quantity
+   getIntegerData(fin, sq);
 
-   getHarddriveQuantity(fin, hdq);
-
+   // get logtype
    getLogType(fin, lt);
 
+   // get log file path (if any exists)
    getLogFilepath(fin, lfp);
 }
 
