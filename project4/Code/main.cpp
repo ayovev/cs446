@@ -28,6 +28,9 @@ int main(int argc, const char *argv[])
    int systemMemory, memoryBlockSize, count = 0, logType = 2;
    int hardDriveQuantity, printerQuantity, multiplier = 0;
    int hardDriveCounter = 0, printerCounter = 0;
+   
+   int processorQuantumNumber;
+   string schedulingCode;
 
    // struct object
    PCB PCBmain;
@@ -55,7 +58,7 @@ int main(int argc, const char *argv[])
       // process configuration file
       readConfigurationFile(fin, cycleTimes, metadataFilepath, logFilepath, logType,
                             systemMemory, units, memoryBlockSize, hardDriveQuantity,
-                            printerQuantity);
+                            printerQuantity, processorQuantumNumber, schedulingCode);
 
       // close configuration file
       fin.close();
