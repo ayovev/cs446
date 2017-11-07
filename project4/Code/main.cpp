@@ -20,7 +20,7 @@ int main(int argc, const char *argv[])
    // declare variables, initialize count and set default logtype (Log to Both)
    ifstream fin;
    ofstream fout;
-   string metadataFilepath, logFilepath;
+   string metadataFilepath, logFilepath, schedulingCode;
    map<string, int> cycleTimes;
    vector<char> metadataCodes;
    vector<string> metadataDescriptors;
@@ -30,7 +30,6 @@ int main(int argc, const char *argv[])
    int hardDriveCounter = 0, printerCounter = 0;
    
    int processorQuantumNumber;
-   string schedulingCode;
 
    // struct object
    PCB PCBmain;
@@ -85,6 +84,24 @@ int main(int argc, const char *argv[])
 
       // start time point
       t1 = chrono::high_resolution_clock::now();
+      
+      if(schedulingCode == "FIFO")
+      {
+         // do nothing (processes are already in correct order)
+      }
+      else if(schedulingCode == "SJF")
+      {
+         // call shortest job first function
+      }
+      else if(schedulingCode == "PS")
+      {
+         // call priority scheduling function
+      }
+      else
+      {
+         // throw an error
+         throw -8;
+      }
 
       // loop through metadata pieces
       for(int i = 0; i < count; i++)
