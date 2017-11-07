@@ -25,6 +25,11 @@ int main(int argc, const char *argv[])
    vector<char> metadataCodes;
    vector<string> metadataDescriptors;
    vector<int> metadataCycles;
+   
+   vector<char> newMetadataCodes;
+   vector<string> newMetadataDescriptors;
+   vector<int> newMetadataCycles;
+   
    int systemMemory, memoryBlockSize, count = 0, logType = 2;
    int hardDriveQuantity, printerQuantity, multiplier = 0;
    int hardDriveCounter = 0, printerCounter = 0;
@@ -90,8 +95,9 @@ int main(int argc, const char *argv[])
          // do nothing (processes are already in correct order)
       }
       else if(schedulingCode == "SJF")
-      {
-         // call shortest job first function
+      {         
+         shortestJobFirst(metadataDescriptors, metadataCodes, metadataCycles, count,
+                          newMetadataDescriptors, newMetadataCodes, newMetadataCycles);
       }
       else if(schedulingCode == "PS")
       {
