@@ -349,6 +349,11 @@ int handleErrors(const int e)
       cout << "ERROR CODE -7; INVALID(NEGATIVE) OR MISSING METADATA CYCLES" << endl;
       return EXIT_FAILURE;
    }
+   if(e == -8)
+   {
+      cout << "ERROR CODE -8; INVALID SCHEDULING CODE" << endl;
+      return EXIT_FAILURE;
+   }
 }
 
 // custom wait function using thread library
