@@ -33,6 +33,8 @@ void myWait(int ms);
 void printTime(high_resolution_clock::time_point t1,
                high_resolution_clock::time_point t2,
                duration<double> time_span, const int logType, ofstream& fout);
+void priorityScheduling(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
+                        vector<int>& mdcy, const int count);
 void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
                    vector<int>& mdcy, const int lt,
                    const int sm, const int i,
@@ -48,3 +50,5 @@ void readOneMeta(ifstream& fin, vector<string>& mdd, vector<char>& mdc,
 void readMetadataFile(ifstream& fin, vector<string>& mdd, vector<char>& mdc,
                       vector<int>& cycles, int& count);
 void* runner(void* total);
+void shortestJobFirst(vector<string>& mdd, vector<char>& mdco, vector<int>& mdcy, const int count,
+                      vector<string>& newmdd, vector<char>& newmdco, vector<int>& newmdcy);

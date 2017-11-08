@@ -7,6 +7,7 @@
 #include<chrono>
 #include<iomanip>
 #include<thread>
+#include<algorithm>
 #include<pthread.h>
 #include<semaphore.h>
 
@@ -384,6 +385,12 @@ void printTime(high_resolution_clock::time_point t1,
    {
       fout << fixed << setprecision(6) << time_span.count() << SPACE << HYPHEN << SPACE;
    }
+}
+
+void priorityScheduling(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
+                        vector<int>& mdcy, const int count)
+{
+   
 }
 
 // logs all data to the monitor in the prescribed example format and changes
@@ -892,4 +899,153 @@ void* runner(void* total)
    int* a = (int*)total;
    myWait(*a);
    pthread_exit(NULL);
+}
+
+void shortestJobFirst(vector<string>& mdd, vector<char>& mdco, vector<int>& mdcy, const int count,
+                      vector<string>& newmdd, vector<char>& newmdco, vector<int>& newmdcy)
+{
+   // get number of processes in metadata file
+   int numProcesses = 0;
+   
+   for(int i = 0; i < count; i++)
+   {
+      if(mdco[i] == 'A' && mdd[i] == "start" && mdcy[i] == 0)
+      {
+         numProcesses++;
+      }
+   }
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   // get number of tasks for each process in metadata file
+   int j = 0, i = 0, numTasks = 0;
+   vector<int> processTasks;
+   vector<int> startingIndex;
+   vector<int> endingIndex;
+   
+   for(int i = 0; i < count; i++)
+   {
+      if(mdco[i] == 'A' && mdd[i] == "start" && mdcy[i] == 0)
+      {
+         startingIndex.push_back(i);
+         numTasks = 0;
+         j = i + 1;
+         
+         while(mdco[j] != 'A' && mdd[j] != "end" && mdcy[j] != 0)
+         {
+            numTasks++;
+            j++;
+         }
+         processTasks.push_back(numTasks);
+         endingIndex.push_back(j);
+      }
+   }
+   
+   for(int i = 0; i < processTasks.size(); i++)
+   {
+      cout << "Number of tasks for process " << i + 1 << ':' << SPACE << processTasks[i] << SPACE
+           << startingIndex[i] << HYPHEN << endingIndex[i] << endl;
+   }
+   getchar();
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   newmdco.push_back(mdco[0]);
+   newmdd.push_back(mdd[0]);
+   newmdcy.push_back(mdcy[0]);
+   
+   for(int j = 0; j < numProcesses; j++)
+   {
+      
+      // debugging
+      cout << "ITERATION #" << j + 1 << endl << "------------" << endl;
+      
+      int shortestJob = processTasks[0];
+      for(int i = 0; i < processTasks.size(); i++)
+      {
+         if(processTasks[i] < processTasks[i - 1])
+         {
+            shortestJob = processTasks[i];
+         }
+      }
+      
+      
+      // debugging
+      cout << "Current Shortest Job: " << shortestJob << endl;
+      getchar();
+      
+      // debugging
+      cout << "Starting Index of Current Shortest Job: " << startingIndex[j] << endl;
+      cout << "Ending Index of Current Shortest Job: " << endingIndex[j] << endl;
+      getchar();
+      
+      
+      for(int i = startingIndex[j]; i <= endingIndex[j]; i++)
+      {
+         cout << "Pushing " << mdco[i] << endl;
+         cout << "Pushing " << mdd[i] << endl;
+         cout << "Pushing " << mdcy[i] << endl;
+         newmdco.push_back(mdco[i]);
+         newmdd.push_back(mdd[i]);
+         newmdcy.push_back(mdcy[i]);
+         getchar();
+      }
+      cout << endl;
+      for(int i = 0; i < newmdco.size(); i++)
+      {
+         cout << newmdco[i]
+              << LEFT_PARENTHESE << newmdd[i] << RIGHT_PARENTHESE
+              << newmdcy[i] << endl;
+      }
+      cout << endl << endl;
+      
+      processTasks.erase(remove(processTasks.begin(), processTasks.end(), shortestJob), processTasks.end());
+   }
+   
+   
+   // // debugging
+   // cout << shortestJob << endl;
+   // getchar();
+   
+   
+   
+   
+   
+   
+   
+   // // debugging
+   // for(int i = 0; i < 1; i++)
+   // {
+   //    cout << mdco[0]
+   //         << LEFT_PARENTHESE << mdd[0] << RIGHT_PARENTHESE
+   //         << mdcy[0] << endl;
+   // }
+   // cout << endl;
+   // for(int i = 0; i < newmdco.size(); i++)
+   // {
+   //    cout << newmdco[i]
+   //         << LEFT_PARENTHESE << newmdd[i] << RIGHT_PARENTHESE
+   //         << newmdcy[i] << endl;
+   // }
+      
 }
