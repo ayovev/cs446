@@ -995,12 +995,12 @@ void shortestJobFirst(vector<string>& mdd, vector<char>& mdco, vector<int>& mdcy
       getchar();
       
       // debugging
-      cout << "Starting Index of Current Shortest Job: " << startingIndex[j] << endl;
-      cout << "Ending Index of Current Shortest Job: " << endingIndex[j] << endl;
+      cout << "Starting Index of Current Shortest Job: " << startingIndex[shortestJob] << endl;
+      cout << "Ending Index of Current Shortest Job: " << endingIndex[shortestJob] << endl;
       getchar();
       
       
-      for(int i = startingIndex[j]; i <= endingIndex[j]; i++)
+      for(int i = startingIndex[shortestJob]; i <= endingIndex[shortestJob]; i++)
       {
          cout << "Pushing " << mdco[i] << endl;
          cout << "Pushing " << mdd[i] << endl;
