@@ -92,12 +92,26 @@ int main(int argc, const char *argv[])
       
       if(schedulingCode == "FIFO")
       {
-         // do nothing (processes are already in correct order)
+         for(int i = 0; i < count; i++)
+         {
+            processAndLog(cycleTimes, metadataDescriptors, metadataCodes, metadataCycles,
+                          logType, systemMemory, i, t1, t2, time_span, fout, PCBmain,
+                          memoryBlockSize, multiplier, semaphore, hardDriveQuantity, printerQuantity,
+                          hardDriveCounter, printerCounter);
+         }
       }
       else if(schedulingCode == "SJF")
-      {         
+      {
          shortestJobFirst(metadataDescriptors, metadataCodes, metadataCycles, count,
                           newMetadataDescriptors, newMetadataCodes, newMetadataCycles);
+         
+         // for(int i = 0; i < count; i++)
+         // {
+         //    processAndLog(cycleTimes, newMetadataDescriptors, newMetadataCodes, newMetadataCycles,
+         //                  logType, systemMemory, i, t1, t2, time_span, fout, PCBmain,
+         //                  memoryBlockSize, multiplier, semaphore, hardDriveQuantity, printerQuantity,
+         //                  hardDriveCounter, printerCounter);
+         // }
       }
       else if(schedulingCode == "PS")
       {
@@ -108,15 +122,7 @@ int main(int argc, const char *argv[])
          // throw an error
          throw -8;
       }
-
-      // loop through metadata pieces
-      for(int i = 0; i < count; i++)
-      {
-         processAndLog(cycleTimes, metadataDescriptors, metadataCodes, metadataCycles,
-                       logType, systemMemory, i, t1, t2, time_span, fout, PCBmain,
-                       memoryBlockSize, multiplier, semaphore, hardDriveQuantity, printerQuantity,
-                       hardDriveCounter, printerCounter);
-      }
+      
    }
    // handle errors if any are thrown
    catch(int e)
