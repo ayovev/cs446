@@ -909,9 +909,12 @@ void shortestJobFirst(vector<string>& mdd, vector<char>& mdco, vector<int>& mdcy
    
    // part 2 variables
    int j = 0, i = 0, numTasks = 0;
-   vector<int> processTasks;
+   vector<int> processNumber;
+   vector<int> tasksPerProcess;
    vector<int> startingIndex;
    vector<int> endingIndex;
+   
+   int shortestJob;
    
    // get number of processes in metadata file
    for(int i = 0; i < count; i++)
@@ -919,10 +922,9 @@ void shortestJobFirst(vector<string>& mdd, vector<char>& mdco, vector<int>& mdcy
       if(mdco[i] == 'A' && mdd[i] == "start" && mdcy[i] == 0)
       {
          numProcesses++;
+         processNumber.push_back(numProcesses);
       }
    }
-   
-   
    
    // get number of tasks and indices for each process in metadata file
    for(int i = 0; i < count; i++)
@@ -938,98 +940,114 @@ void shortestJobFirst(vector<string>& mdd, vector<char>& mdco, vector<int>& mdcy
             numTasks++;
             j++;
          }
-         processTasks.push_back(numTasks);
+         tasksPerProcess.push_back(numTasks);
          endingIndex.push_back(j);
       }
    }
    
-   for(int i = 0; i < processTasks.size(); i++)
+   // find shortest job
+   shortestJob = processNumber[0];
+   for(int k = 0; k < tasksPerProcess.size(); k++)
    {
-      cout << "Number of tasks for process " << i + 1 << ':' << SPACE << processTasks[i] << SPACE
-           << startingIndex[i] << HYPHEN << endingIndex[i] << endl;
+      if(tasksPerProcess[k] < tasksPerProcess[k - 1])
+      {
+         shortestJob = processNumber[k] - 1;
+      }
    }
-   getchar();
    
-   
-   
-   
-   // being constructing new metadata vectors
+   // begin constructing new metadata vectors
    newmdco.push_back(mdco[0]);
    newmdd.push_back(mdd[0]);
    newmdcy.push_back(mdcy[0]);
    
-   // for(int j = 0; j < numProcesses; j++)
-   // {
-   //    
-   //    // debugging
-   //    cout << "ITERATION #" << j + 1 << endl << "------------" << endl;
-   //    
-   //    int shortestJob = processTasks[0];
-   //    for(int i = 0; i < processTasks.size(); i++)
-   //    {
-   //       if(processTasks[i] < processTasks[i - 1])
-   //       {
-   //          shortestJob = processTasks[i];
-   //       }
-   //    }
-   //    
-   //    
-   //    // debugging
-   //    cout << "Current Shortest Job: " << shortestJob << endl;
-   //    getchar();
-   //    
-   //    // debugging
-   //    cout << "Starting Index of Current Shortest Job: " << startingIndex[shortestJob] << endl;
-   //    cout << "Ending Index of Current Shortest Job: " << endingIndex[shortestJob] << endl;
-   //    getchar();
-   //    
-   //    
-   //    for(int i = startingIndex[shortestJob]; i <= endingIndex[shortestJob]; i++)
-   //    {
-   //       cout << "Pushing " << mdco[i] << endl;
-   //       cout << "Pushing " << mdd[i] << endl;
-   //       cout << "Pushing " << mdcy[i] << endl;
-   //       newmdco.push_back(mdco[i]);
-   //       newmdd.push_back(mdd[i]);
-   //       newmdcy.push_back(mdcy[i]);
-   //       getchar();
-   //    }
-   //    cout << endl;
-   //    for(int i = 0; i < newmdco.size(); i++)
-   //    {
-   //       cout << newmdco[i]
-   //            << LEFT_PARENTHESE << newmdd[i] << RIGHT_PARENTHESE
-   //            << newmdcy[i] << endl;
-   //    }
-   //    cout << endl << endl;
-   //    
-   //    processTasks.erase(remove(processTasks.begin(), processTasks.end(), shortestJob), processTasks.end());
-   // }
+   // debugging
+   cout << "Current Shortest Job(Process): " << processNumber[shortestJob] << endl;
+   getchar();
    
+   // debugging
+   cout << "Starting Index of Current Shortest Job(Process): " << startingIndex[shortestJob] << endl;
+   cout << "Ending Index of Current Shortest Job(Process): " << endingIndex[shortestJob] << endl;
+   getchar();
    
+   for(int j = startingIndex[shortestJob]; j <= endingIndex[shortestJob]; j++)
+   {
+      newmdco.push_back(mdco[j]);
+      newmdd.push_back(mdd[j]);
+      newmdcy.push_back(mdcy[j]);
+   }
+   
+   mdd.erase(mdd.begin() + startingIndex[shortestJob], mdd.begin() + (endingIndex[shortestJob] + 1));
+   mdco.erase(mdco.begin() + startingIndex[shortestJob], mdco.begin() + (endingIndex[shortestJob] + 1));
+   mdcy.erase(mdcy.begin() + startingIndex[shortestJob], mdcy.begin() + (endingIndex[shortestJob] + 1));
+   
+   // debugging
+   for(int i = 0; i < newmdco.size(); i++)
+   {
+      cout << newmdco[i] << LEFT_PARENTHESE
+           << newmdd[i] << RIGHT_PARENTHESE
+           << newmdcy[i] << endl;
+   }
+   
+   // get number of processes in metadata file
+   for(int i = 0; i < count; i++)
+   {
+      if(mdco[i] == 'A' && mdd[i] == "start" && mdcy[i] == 0)
+      {
+         numProcesses++;
+         processNumber.push_back(numProcesses);
+      }
+   }
+   
+   // get number of tasks and indices for each process in metadata file
+   for(int i = 0; i < count; i++)
+   {
+      if(mdco[i] == 'A' && mdd[i] == "start" && mdcy[i] == 0)
+      {
+         startingIndex.push_back(i);
+         numTasks = 0;
+         j = i + 1;
+         
+         while(mdco[j] != 'A' && mdd[j] != "end" && mdcy[j] != 0)
+         {
+            numTasks++;
+            j++;
+         }
+         tasksPerProcess.push_back(numTasks);
+         endingIndex.push_back(j);
+      }
+   }
+   
+   // find shortest job
+   shortestJob = processNumber[0];
+   for(int k = 0; k < tasksPerProcess.size(); k++)
+   {
+      if(tasksPerProcess[k] < tasksPerProcess[k - 1])
+      {
+         shortestJob = processNumber[k] - 1;
+      }
+   }
+   // 
    // // debugging
-   // cout << shortestJob << endl;
+   // cout << "Current Shortest Job(Process): " << processNumber[shortestJob] << endl;
+   // getchar();
+   // 
+   // // debugging
+   // cout << "Starting Index of Current Shortest Job(Process): " << startingIndex[shortestJob] << endl;
+   // cout << "Ending Index of Current Shortest Job(Process): " << endingIndex[shortestJob] << endl;
    // getchar();
    
+   for(int j = startingIndex[shortestJob]; j <= endingIndex[shortestJob]; j++)
+   {
+      newmdco.push_back(mdco[j]);
+      newmdd.push_back(mdd[j]);
+      newmdcy.push_back(mdcy[j]);
+   }
    
-   
-   
-   
-   
-   
-   // // debugging
-   // for(int i = 0; i < 1; i++)
-   // {
-   //    cout << mdco[0]
-   //         << LEFT_PARENTHESE << mdd[0] << RIGHT_PARENTHESE
-   //         << mdcy[0] << endl;
-   // }
-   // cout << endl;
-   // for(int i = 0; i < newmdco.size(); i++)
-   // {
-   //    cout << newmdco[i]
-   //         << LEFT_PARENTHESE << newmdd[i] << RIGHT_PARENTHESE
-   //         << newmdcy[i] << endl;
-   // }
-      
+   // debugging
+   for(int i = 0; i < newmdco.size(); i++)
+   {
+      cout << newmdco[i] << LEFT_PARENTHESE
+           << newmdd[i] << RIGHT_PARENTHESE
+           << newmdcy[i] << endl;
+   }
 }

@@ -86,12 +86,12 @@ int main(int argc, const char *argv[])
          fout.clear();
          fout.open(logFilepath);
       }
-
-      // start time point
-      t1 = chrono::high_resolution_clock::now();
       
       if(schedulingCode == "FIFO")
       {
+         // start time point
+         t1 = chrono::high_resolution_clock::now();
+         
          for(int i = 0; i < count; i++)
          {
             processAndLog(cycleTimes, metadataDescriptors, metadataCodes, metadataCycles,
@@ -104,6 +104,9 @@ int main(int argc, const char *argv[])
       {
          shortestJobFirst(metadataDescriptors, metadataCodes, metadataCycles, count,
                           newMetadataDescriptors, newMetadataCodes, newMetadataCycles);
+                          
+         // start time point
+         t1 = chrono::high_resolution_clock::now();
          
          // for(int i = 0; i < count; i++)
          // {
