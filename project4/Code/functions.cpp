@@ -401,7 +401,7 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
                    high_resolution_clock::time_point t1, high_resolution_clock::time_point t2,
                    duration<double> time_span, ofstream& fout, PCB PCBmain,
                    const int mbs, int& mult, sem_t semaphore, const int hdq, const int pq,
-                   int& hdc, int& pc)
+                   int& hdc, int& pc, int& processNumber)
 {
    printTime(t1, t2, time_span, lt, fout);
 
@@ -457,11 +457,11 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
             {
                if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
                {
-                  cout << "OS: preparing process 1" << endl;
+                  cout << "OS: preparing process " << processNumber << endl;
                }
                if(lt == OUTPUT_FILE || lt == MONITOR_AND_OUTPUT_FILE)
                {
-                  fout << "OS: preparing process 1" << endl;
+                  fout << "OS: preparing process " << processNumber << endl;
                }
             }
             else if(j == 1)
@@ -472,11 +472,11 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
 
                if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
                {
-                  cout << "OS: starting process 1" << endl;
+                  cout << "OS: starting process " << processNumber << endl;
                }
                if(lt == OUTPUT_FILE || lt == MONITOR_AND_OUTPUT_FILE)
                {
-                  fout << "OS: starting process 1" << endl;
+                  fout << "OS: starting process " << processNumber << endl;
                }
             }
          }
@@ -487,11 +487,11 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
 
          if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
          {
-            cout << "OS: removing process 1" << endl;
+            cout << "OS: removing process " << processNumber << endl;
          }
          if(lt == OUTPUT_FILE || lt == MONITOR_AND_OUTPUT_FILE)
          {
-            fout << "OS: removing process 1" << endl;
+            fout << "OS: removing process " << processNumber << endl;
          }
       }
    }
@@ -507,11 +507,11 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
          {
             if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
             {
-               cout << "Process 1: start processing action" << endl;
+               cout << "Process " << processNumber << ": start processing action" << endl;
             }
             if(lt == OUTPUT_FILE || lt == MONITOR_AND_OUTPUT_FILE)
             {
-               fout << "Process 1: start processing action" << endl;
+               fout << "Process " << processNumber << ": start processing action" << endl;
             }
          }
          else if(j == 1)
@@ -522,11 +522,11 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
 
             if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
             {
-               cout << "Process 1: end processing action" << endl;
+               cout << "Process " << processNumber << ": end processing action" << endl;
             }
             if(lt == OUTPUT_FILE || lt == MONITOR_AND_OUTPUT_FILE)
             {
-               fout << "Process 1: end processing action" << endl;
+               fout << "Process " << processNumber << ": end processing action" << endl;
             }
          }
       }
@@ -545,11 +545,11 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
             {
                if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
                {
-                  cout << "Process 1: allocating memory" << endl;
+                  cout << "Process " << processNumber << ": allocating memory" << endl;
                }
                if(lt == OUTPUT_FILE || lt == MONITOR_AND_OUTPUT_FILE)
                {
-                  fout << "Process 1: allocating memory" << endl;
+                  fout << "Process " << processNumber << ": allocating memory" << endl;
                }
             }
             else if(j == 1)
@@ -584,11 +584,11 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
             {
                if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
                {
-                  cout << "Process 1: start memory blocking" << endl;
+                  cout << "Process " << processNumber << ": start memory blocking" << endl;
                }
                if(lt == OUTPUT_FILE || lt == MONITOR_AND_OUTPUT_FILE)
                {
-                  fout << "Process 1: start memory blocking" << endl;
+                  fout << "Process " << processNumber << ": start memory blocking" << endl;
                }
             }
             else if(j == 1)
@@ -599,11 +599,11 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
 
                if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
                {
-                  cout << "Process 1: end memory blocking" << endl;
+                  cout << "Process " << processNumber << ": end memory blocking" << endl;
                }
                if(lt == OUTPUT_FILE || lt == MONITOR_AND_OUTPUT_FILE)
                {
-                  fout << "Process 1: end memory blocking" << endl;
+                  fout << "Process " << processNumber << ": end memory blocking" << endl;
                }
             }
          }
@@ -630,11 +630,11 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
          {
             if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
             {
-               cout << "Process 1: start " << mdd[i];
+               cout << "Process " << processNumber << ": start " << mdd[i];
             }
             if(lt == OUTPUT_FILE || lt == MONITOR_AND_OUTPUT_FILE)
             {
-               fout << "Process 1: start " << mdd[i];
+               fout << "Process " << processNumber << ": start " << mdd[i];
             }
 
             if(mdco[i] == 'O')
@@ -735,11 +735,11 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
 
             if(lt == MONITOR || lt == MONITOR_AND_OUTPUT_FILE)
             {
-               cout << "Process 1: end " << mdd[i];
+               cout << "Process " << processNumber << ": end " << mdd[i];
             }
             if(lt == OUTPUT_FILE || lt == MONITOR_AND_OUTPUT_FILE)
             {
-               fout << "Process 1: end " << mdd[i];
+               fout << "Process " << processNumber << ": end " << mdd[i];
             }
 
             if(mdco[i] == 'O')
@@ -916,200 +916,119 @@ void shortestJobFirst(vector<string>& mdd, vector<char>& mdco, vector<int>& mdcy
    
    int shortestJob;
    
-// FIRST ITERATION ////////////////////////////////////////////////////////////
-   
    // get number of processes in metadata file
+   numProcesses = 0;
    for(int i = 0; i < mdd.size(); i++)
    {
       if(mdco[i] == 'A' && mdd[i] == "start" && mdcy[i] == 0)
       {
          numProcesses++;
-         processNumber.push_back(numProcesses);
       }
    }
+   int outer = numProcesses;
    
-   // get number of tasks and indices for each process in metadata file
-   for(int i = 0; i < mdd.size(); i++)
+   for(int a = 0; a < outer; a++)
    {
-      if(mdco[i] == 'A' && mdd[i] == "start" && mdcy[i] == 0)
+      if(a == 0)
       {
-         startingIndex.push_back(i);
-         numTasks = 0;
-         j = i + 1;
+         // begin constructing new metadata vectors
+         newmdco.push_back(mdco[0]);
+         newmdd.push_back(mdd[0]);
+         newmdcy.push_back(mdcy[0]);
          
-         while(mdco[j] != 'A' && mdd[j] != "end" && mdcy[j] != 0)
+         mdd.erase(mdd.begin());
+         mdco.erase(mdco.begin());
+         mdcy.erase(mdcy.begin());
+      }
+      
+      // get number of processes in metadata file
+      numProcesses = 0;
+      for(int i = 0; i < mdd.size(); i++)
+      {
+         if(mdco[i] == 'A' && mdd[i] == "start" && mdcy[i] == 0)
          {
-            numTasks++;
-            j++;
+            processNumber.push_back(numProcesses);
+            numProcesses++;
          }
-         tasksPerProcess.push_back(numTasks);
-         endingIndex.push_back(j);
       }
-   }
-   
-   // find shortest job
-   shortestJob = processNumber[0];
-   for(int k = 0; k < tasksPerProcess.size(); k++)
-   {
-      if(tasksPerProcess[k] < tasksPerProcess[k - 1])
+      
+      // get number of tasks and indices for each process in metadata file
+      for(int i = 0; i < mdd.size(); i++)
       {
-         shortestJob = processNumber[k] - 1;
-      }
-   }
-   
-   // begin constructing new metadata vectors
-   newmdco.push_back(mdco[0]);
-   newmdd.push_back(mdd[0]);
-   newmdcy.push_back(mdcy[0]);
-   
-   mdd.erase(mdd.begin());
-   mdco.erase(mdco.begin());
-   mdcy.erase(mdcy.begin());
-   
-   // // debugging
-   // cout << "Current Shortest Job(Process): " << processNumber[shortestJob] << endl;
-   // getchar();
-   // 
-   // // debugging
-   // cout << "Starting Index of Current Shortest Job(Process): " << startingIndex[shortestJob] << endl;
-   // cout << "Ending Index of Current Shortest Job(Process): " << endingIndex[shortestJob] << endl;
-   // getchar();
-   
-   for(int j = startingIndex[shortestJob]; j <= endingIndex[shortestJob]; j++)
-   {
-      newmdco.push_back(mdco[j]);
-      newmdd.push_back(mdd[j]);
-      newmdcy.push_back(mdcy[j]);
-   }
-   
-   mdd.erase(mdd.begin() + startingIndex[shortestJob], mdd.begin() + (endingIndex[shortestJob] + 1));
-   mdco.erase(mdco.begin() + startingIndex[shortestJob], mdco.begin() + (endingIndex[shortestJob] + 1));
-   mdcy.erase(mdcy.begin() + startingIndex[shortestJob], mdcy.begin() + (endingIndex[shortestJob] + 1));
-   
-// SECOND ITERATION ///////////////////////////////////////////////////////////
-   
-   // get number of processes in metadata file
-   for(int i = 0; i < mdd.size(); i++)
-   {
-      if(mdco[i] == 'A' && mdd[i] == "start" && mdcy[i] == 0)
-      {
-         numProcesses++;
-         processNumber.push_back(numProcesses);
-      }
-   }
-   
-   // get number of tasks and indices for each process in metadata file
-   for(int i = 0; i < mdd.size(); i++)
-   {
-      if(mdco[i] == 'A' && mdd[i] == "start" && mdcy[i] == 0)
-      {
-         startingIndex.push_back(i);
-         numTasks = 0;
-         j = i + 1;
-         
-         while(mdco[j] != 'A' && mdd[j] != "end" && mdcy[j] != 0)
+         if(mdco[i] == 'A' && mdd[i] == "start" && mdcy[i] == 0)
          {
-            numTasks++;
-            j++;
+            startingIndex.push_back(i);
+            numTasks = 0;
+            j = i + 1;
+            
+            while(mdco[j] != 'A' && mdd[j] != "end" && mdcy[j] != 0)
+            {
+               numTasks++;
+               j++;
+            }
+            tasksPerProcess.push_back(numTasks);
+            endingIndex.push_back(j);
          }
-         tasksPerProcess.push_back(numTasks);
-         endingIndex.push_back(j);
       }
-   }
-   
-   // find shortest job
-   shortestJob = processNumber[0];
-   for(int k = 0; k < tasksPerProcess.size(); k++)
-   {
-      if(tasksPerProcess[k] < tasksPerProcess[k - 1])
+      
+      // find shortest job
+      shortestJob = processNumber[0];
+      for(int k = 0; k < tasksPerProcess.size(); k++)
       {
-         shortestJob = processNumber[k] - 1;
-      }
-   }
-   
-   for(int j = startingIndex[shortestJob]; j <= endingIndex[shortestJob]; j++)
-   {
-      newmdco.push_back(mdco[j]);
-      newmdd.push_back(mdd[j]);
-      newmdcy.push_back(mdcy[j]);
-   }
-   
-   mdd.erase(mdd.begin() + startingIndex[shortestJob], mdd.begin() + (endingIndex[shortestJob] + 1));
-   mdco.erase(mdco.begin() + startingIndex[shortestJob], mdco.begin() + (endingIndex[shortestJob] + 1));
-   mdcy.erase(mdcy.begin() + startingIndex[shortestJob], mdcy.begin() + (endingIndex[shortestJob] + 1));
-   
-// THIRD ITERATION ///////////////////////////////////////////////////////////
-   
-   // get number of processes in metadata file
-   for(int i = 0; i < mdd.size(); i++)
-   {
-      if(mdco[i] == 'A' && mdd[i] == "start" && mdcy[i] == 0)
-      {
-         numProcesses++;
-         processNumber.push_back(numProcesses);
-      }
-   }
-   
-   // get number of tasks and indices for each process in metadata file
-   for(int i = 0; i < mdd.size(); i++)
-   {
-      if(mdco[i] == 'A' && mdd[i] == "start" && mdcy[i] == 0)
-      {
-         startingIndex.push_back(i);
-         numTasks = 0;
-         j = i + 1;
-         
-         while(mdco[j] != 'A' && mdd[j] != "end" && mdcy[j] != 0)
+         if(tasksPerProcess[k] < tasksPerProcess[k - 1])
          {
-            numTasks++;
-            j++;
+            shortestJob = processNumber[k];
          }
-         tasksPerProcess.push_back(numTasks);
-         endingIndex.push_back(j);
       }
-   }
-   
-   // find shortest job
-   shortestJob = processNumber[0];
-   for(int k = 0; k < tasksPerProcess.size(); k++)
-   {
-      if(tasksPerProcess[k] < tasksPerProcess[k - 1])
+      
+      for(int j = startingIndex[shortestJob]; j <= endingIndex[shortestJob]; j++)
       {
-         shortestJob = processNumber[k] - 1;
+         newmdco.push_back(mdco[j]);
+         newmdd.push_back(mdd[j]);
+         newmdcy.push_back(mdcy[j]);
       }
-   }
-   
-   for(int j = startingIndex[shortestJob]; j <= endingIndex[shortestJob]; j++)
-   {
-      newmdco.push_back(mdco[j]);
-      newmdd.push_back(mdd[j]);
-      newmdcy.push_back(mdcy[j]);
-   }
-   
-   mdd.erase(mdd.begin() + startingIndex[shortestJob], mdd.begin() + (endingIndex[shortestJob] + 1));
-   mdco.erase(mdco.begin() + startingIndex[shortestJob], mdco.begin() + (endingIndex[shortestJob] + 1));
-   mdcy.erase(mdcy.begin() + startingIndex[shortestJob], mdcy.begin() + (endingIndex[shortestJob] + 1));
-   
-   cout << "MDD SIZE " << mdd.size() << endl
-        << "MDCO SIZE " << mdco.size() << endl
-        << "MDCY SIZE " << mdcy.size() << endl << endl;
-   getchar();
-   
-   // debugging
-   for(int i = 0; i < mdd.size(); i++)
-   {
-      cout << mdco[i] << LEFT_PARENTHESE
-           << mdd[i] << RIGHT_PARENTHESE
-           << mdcy[i] << endl;
-   }
-   getchar();
-   
-   
-   // debugging
-   for(int i = 0; i < newmdd.size(); i++)
-   {
-      cout << newmdco[i] << LEFT_PARENTHESE
-           << newmdd[i] << RIGHT_PARENTHESE
-           << newmdcy[i] << endl;
+      
+      mdd.erase(mdd.begin() + startingIndex[shortestJob], mdd.begin() + (endingIndex[shortestJob] + 1));
+      mdco.erase(mdco.begin() + startingIndex[shortestJob], mdco.begin() + (endingIndex[shortestJob] + 1));
+      mdcy.erase(mdcy.begin() + startingIndex[shortestJob], mdcy.begin() + (endingIndex[shortestJob] + 1));
+      
+      if(mdd.size() == 1)
+      {
+         newmdco.push_back(mdco[0]);
+         newmdd.push_back(mdd[0]);
+         newmdcy.push_back(mdcy[0]);
+      }
+      
+      processNumber.clear();
+      tasksPerProcess.clear();
+      startingIndex.clear();
+      endingIndex.clear();
    }
 }
+
+// SJF DEBUGGING LINES
+
+// // debugging
+// cout << "Current Shortest Job(Process): " << processNumber[shortestJob] << endl;
+// getchar();
+
+// // debugging
+// cout << "Starting Index of Current Shortest Job(Process): " << startingIndex[shortestJob] << endl;
+// cout << "Ending Index of Current Shortest Job(Process): " << endingIndex[shortestJob] << endl;
+// getchar();
+
+// // debugging
+// for(int i = 0; i < newmdd.size(); i++)
+// {
+//    cout << newmdco[i] << LEFT_PARENTHESE
+//         << newmdd[i] << RIGHT_PARENTHESE
+//         << newmdcy[i] << endl;
+// }
+
+// // debugging
+// for(int i = 0; i < mdd.size(); i++)
+// {
+//    cout << mdco[i] << LEFT_PARENTHESE
+//         << mdd[i] << RIGHT_PARENTHESE
+//         << mdcy[i] << endl;
+// }

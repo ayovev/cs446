@@ -92,29 +92,39 @@ int main(int argc, const char *argv[])
          // start time point
          t1 = chrono::high_resolution_clock::now();
          
+         int processNumber = 0;
          for(int i = 0; i < count; i++)
          {
+            if(newMetadataCodes[i] == 'A' && newMetadataDescriptors[i] == "start" && newMetadataCycles[i] == 0)
+            {
+               processNumber++;
+            }
             processAndLog(cycleTimes, metadataDescriptors, metadataCodes, metadataCycles,
                           logType, systemMemory, i, t1, t2, time_span, fout, PCBmain,
                           memoryBlockSize, multiplier, semaphore, hardDriveQuantity, printerQuantity,
-                          hardDriveCounter, printerCounter);
+                          hardDriveCounter, printerCounter, processNumber);
          }
       }
       else if(schedulingCode == "SJF")
       {
          shortestJobFirst(metadataDescriptors, metadataCodes, metadataCycles, count,
                           newMetadataDescriptors, newMetadataCodes, newMetadataCycles);
-                          
+         
          // start time point
          t1 = chrono::high_resolution_clock::now();
          
-         // for(int i = 0; i < count; i++)
-         // {
-         //    processAndLog(cycleTimes, newMetadataDescriptors, newMetadataCodes, newMetadataCycles,
-         //                  logType, systemMemory, i, t1, t2, time_span, fout, PCBmain,
-         //                  memoryBlockSize, multiplier, semaphore, hardDriveQuantity, printerQuantity,
-         //                  hardDriveCounter, printerCounter);
-         // }
+         int processNumber = 0;
+         for(int i = 0; i < count; i++)
+         {
+            if(newMetadataCodes[i] == 'A' && newMetadataDescriptors[i] == "start" && newMetadataCycles[i] == 0)
+            {
+               processNumber++;
+            }
+            processAndLog(cycleTimes, newMetadataDescriptors, newMetadataCodes, newMetadataCycles,
+                          logType, systemMemory, i, t1, t2, time_span, fout, PCBmain,
+                          memoryBlockSize, multiplier, semaphore, hardDriveQuantity, printerQuantity,
+                          hardDriveCounter, printerCounter, processNumber);
+         }
       }
       else if(schedulingCode == "PS")
       {
