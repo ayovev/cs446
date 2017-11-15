@@ -50,5 +50,5 @@ void readOneMeta(ifstream& fin, vector<string>& mdd, vector<char>& mdc,
 void readMetadataFile(ifstream& fin, vector<string>& mdd, vector<char>& mdc,
                       vector<int>& cycles, int& count);
 void* runner(void* total);
-void shortestJobFirst(vector<string>& mdd, vector<char>& mdco, vector<int>& mdcy, const int count,
+void shortestJobFirst(vector<string>& mdd, vector<char>& mdco, vector<int>& mdcy,
                       vector<string>& newmdd, vector<char>& newmdco, vector<int>& newmdcy);
