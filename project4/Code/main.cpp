@@ -31,8 +31,8 @@ int main(int argc, const char *argv[])
    vector<int> newMetadataCycles;
    
    int systemMemory, memoryBlockSize, count = 0, logType = 2;
-   int hardDriveQuantity, printerQuantity, multiplier = 0;
-   int hardDriveCounter = 0, printerCounter = 0;
+   int speakerQuantity, printerQuantity, multiplier = 0;
+   int speakerCounter = 0, printerCounter = 0;
    
    int processorQuantumNumber;
    
@@ -63,8 +63,8 @@ int main(int argc, const char *argv[])
 
       // process configuration file
       readConfigurationFile(fin, cycleTimes, metadataFilepath, logFilepath, logType,
-                            systemMemory, memoryBlockSize, hardDriveQuantity,
-                            printerQuantity, processorQuantumNumber, schedulingCode);
+                            systemMemory, memoryBlockSize, printerQuantity,
+                            speakerQuantity, processorQuantumNumber, schedulingCode);
 
       // close configuration file
       fin.close();
@@ -104,8 +104,8 @@ int main(int argc, const char *argv[])
             // process and log metadata vectors
             processAndLog(cycleTimes, metadataDescriptors, metadataCodes, metadataCycles,
                           logType, systemMemory, i, t1, t2, time_span, fout, PCBmain,
-                          memoryBlockSize, multiplier, semaphore, hardDriveQuantity, printerQuantity,
-                          hardDriveCounter, printerCounter, processNumber);
+                          memoryBlockSize, multiplier, semaphore, speakerQuantity, printerQuantity,
+                          speakerCounter, printerCounter, processNumber);
          }
       }
       else if(schedulingCode == "SJF")
@@ -127,8 +127,8 @@ int main(int argc, const char *argv[])
             // process and log with new metadata vectors
             processAndLog(cycleTimes, newMetadataDescriptors, newMetadataCodes, newMetadataCycles,
                           logType, systemMemory, i, t1, t2, time_span, fout, PCBmain,
-                          memoryBlockSize, multiplier, semaphore, hardDriveQuantity, printerQuantity,
-                          hardDriveCounter, printerCounter, processNumber);
+                          memoryBlockSize, multiplier, semaphore, speakerQuantity, printerQuantity,
+                          speakerCounter, printerCounter, processNumber);
          }
       }
       else if(schedulingCode == "PS")
