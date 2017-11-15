@@ -111,7 +111,7 @@ int main(int argc, const char *argv[])
       else if(schedulingCode == "SJF")
       {
          // setup new metadata vectors with SJF order
-         shortestJobFirst(metadataDescriptors, metadataCodes, metadataCycles, count,
+         shortestJobFirst(metadataDescriptors, metadataCodes, metadataCycles,
                           newMetadataDescriptors, newMetadataCodes, newMetadataCycles);
          
          // start time point
