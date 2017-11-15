@@ -33,11 +33,10 @@ void myWait(int ms);
 void printTime(high_resolution_clock::time_point t1,
                high_resolution_clock::time_point t2,
                duration<double> time_span, const int logType, ofstream& fout);
-void priorityScheduling(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
-                        vector<int>& mdcy, const int count);
+void priorityScheduling(vector<string>& mdd, vector<char>& mdco, vector<int>& mdcy,
+                        vector<string>& newmdd, vector<char>& newmdco, vector<int>& newmdcy);
 void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
-                   vector<int>& mdcy, const int lt,
-                   const int sm, const int i,
+                   vector<int>& mdcy, const int lt, const int sm, const int i,
                    high_resolution_clock::time_point t1, high_resolution_clock::time_point t2,
                    duration<double> time_span, ofstream& fout, PCB PCBmain,
                    const int mbs, int& mult, sem_t semaphore, const int sq, const int pq,

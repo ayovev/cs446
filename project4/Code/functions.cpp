@@ -387,17 +387,144 @@ void printTime(high_resolution_clock::time_point t1,
    }
 }
 
-void priorityScheduling(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
-                        vector<int>& mdcy, const int count)
+void priorityScheduling(vector<string>& mdd, vector<char>& mdco, vector<int>& mdcy,
+                        vector<string>& newmdd, vector<char>& newmdco, vector<int>& newmdcy)
 {
+   // declare variables
+   int priorityJob, numProcesses = 0;
+   vector<int> processNumber, ioTasksPerProcess, startingIndex, endingIndex;
+   
+   // get number of processes in metadata file
+   numProcesses = 0;
+   for(int i = 0; i < mdd.size(); i++)
+   {
+      // check if current piece of metadata is A(start)0
+      if(mdco[i] == 'A' && mdd[i] == "start" && mdcy[i] == 0)
+      {
+         // increment number of processes
+         numProcesses++;
+      }
+   }
+   int outer = numProcesses;
+   
+   for(int a = 0; a < outer; a++)
+   {
+      // if first iteration push S(start)0
+      if(a == 0)
+      {
+         // begin constructing new metadata vectors
+         newmdco.push_back(mdco[0]);
+         newmdd.push_back(mdd[0]);
+         newmdcy.push_back(mdcy[0]);
+         
+         // erase loaded metadata
+         mdd.erase(mdd.begin());
+         mdco.erase(mdco.begin());
+         mdcy.erase(mdcy.begin());
+      }
+      
+      // get number of processes in metadata file
+      numProcesses = 0;
+      for(int i = 0; i < mdd.size(); i++)
+      {
+         if(mdco[i] == 'A' && mdd[i] == "start" && mdcy[i] == 0)
+         {
+            processNumber.push_back(numProcesses);
+            numProcesses++;
+         }
+      }
+      
+      // get number of I/O tasks and indices for each process in metadata file
+      for(int c = 0; c < mdd.size(); c++)
+      {
+         // if metadata is A(start)0 start indexing
+         if(mdco[c] == 'A' && mdd[c] == "start" && mdcy[c] == 0)
+         {
+            startingIndex.push_back(c);
+            int numIOTasks = 0;
+            int d = c + 1;
+            
+            // while metadata is not A(end)0 keep indexing
+            while(mdco[d] != 'A' && mdd[d] != "end" && mdcy[d] != 0)
+            {
+               if(mdco[d] == 'I' || mdco[d] == 'O')
+               {
+                  numIOTasks++;
+               }
+               d++;
+            }
+            // end indexing
+            ioTasksPerProcess.push_back(numIOTasks);
+            endingIndex.push_back(d);
+         }
+      }
+      
+      // // debugging
+      // cout << ioTasksPerProcess.size() << endl;
+      // getchar();
+      // 
+      // // debugging
+      // for(int i = 0; i < ioTasksPerProcess.size(); i++)
+      // {
+      //    cout << ioTasksPerProcess[i] << endl;
+      // }
+      // getchar();
+      
+      // assign arbitrary shortest job
+      priorityJob = processNumber[0];
+      
+      // loop through metadata to determine highest priority job
+      for(int e = 0; e < ioTasksPerProcess.size(); e++)
+      {
+         // if current process has more I/O than previous process
+         if(ioTasksPerProcess[e] > ioTasksPerProcess[e - 1])
+         {
+            // set high priority job
+            priorityJob = processNumber[e];
+         }
+      }
+      
+      // cout << "Priority Job: " << priorityJob << endl;
+      // getchar();
+      // 
+      // // debugging
+      // cout << "Process Number: " << processNumber[priorityJob] << endl;
+      // getchar();
+      
+      // added current shortest process to new metadata vectors
+      for(int f = startingIndex[priorityJob]; f <= endingIndex[priorityJob]; f++)
+      {
+         newmdco.push_back(mdco[f]);
+         newmdd.push_back(mdd[f]);
+         newmdcy.push_back(mdcy[f]);
+      }
+      
+      // erase loaded metadata
+      mdd.erase(mdd.begin() + startingIndex[priorityJob], mdd.begin() + (endingIndex[priorityJob] + 1));
+      mdco.erase(mdco.begin() + startingIndex[priorityJob], mdco.begin() + (endingIndex[priorityJob] + 1));
+      mdcy.erase(mdcy.begin() + startingIndex[priorityJob], mdcy.begin() + (endingIndex[priorityJob] + 1));
+      
+      // if last iteration add S(end)0
+      if(mdd.size() == 1)
+      {
+         newmdco.push_back(mdco[0]);
+         newmdd.push_back(mdd[0]);
+         newmdcy.push_back(mdcy[0]);
+      }
+      
+      // reset temp storage vectors
+      processNumber.clear();
+      ioTasksPerProcess.clear();
+      startingIndex.clear();
+      endingIndex.clear();
+   }
    
 }
 
 // logs all data to the monitor in the prescribed example format and changes
 // PCB process state
 void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
-                   vector<int>& mdcy, const int lt,
-                   const int sm, const int i,
+                   vector<int>& mdcy, const int lt, const int sm, const int i,
                    high_resolution_clock::time_point t1, high_resolution_clock::time_point t2,
                    duration<double> time_span, ofstream& fout, PCB PCBmain,
                    const int mbs, int& mult, sem_t semaphore, const int sq, const int pq,
@@ -914,10 +1041,7 @@ void shortestJobFirst(vector<string>& mdd, vector<char>& mdco, vector<int>& mdcy
 {
    // declare variables
    int shortestJob, numProcesses = 0;
-   vector<int> processNumber;
-   vector<int> tasksPerProcess;
-   vector<int> startingIndex;
-   vector<int> endingIndex;
+   vector<int> processNumber, tasksPerProcess, startingIndex, endingIndex;
    
    // get number of processes in metadata file
    numProcesses = 0;
