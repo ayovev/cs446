@@ -901,34 +901,33 @@ void* runner(void* total)
    pthread_exit(NULL);
 }
 
-void shortestJobFirst(vector<string>& mdd, vector<char>& mdco, vector<int>& mdcy, const int count,
+void shortestJobFirst(vector<string>& mdd, vector<char>& mdco, vector<int>& mdcy,
                       vector<string>& newmdd, vector<char>& newmdco, vector<int>& newmdcy)
 {
-   // part 1 variables
-   int numProcesses = 0;
-   
-   // part 2 variables
-   int j = 0, i = 0, numTasks = 0;
+   // declare variables
+   int shortestJob, numProcesses = 0;
    vector<int> processNumber;
    vector<int> tasksPerProcess;
    vector<int> startingIndex;
    vector<int> endingIndex;
    
-   int shortestJob;
-   
    // get number of processes in metadata file
    numProcesses = 0;
    for(int i = 0; i < mdd.size(); i++)
    {
+      // check if current piece of metadata is A(start)0
       if(mdco[i] == 'A' && mdd[i] == "start" && mdcy[i] == 0)
       {
+         // increment number of processes
          numProcesses++;
       }
    }
    int outer = numProcesses;
    
+   // loop for the number of processes
    for(int a = 0; a < outer; a++)
    {
+      // if first iteration push S(start)0
       if(a == 0)
       {
          // begin constructing new metadata vectors
@@ -936,6 +935,7 @@ void shortestJobFirst(vector<string>& mdd, vector<char>& mdco, vector<int>& mdcy
          newmdd.push_back(mdd[0]);
          newmdcy.push_back(mdcy[0]);
          
+         // erase loaded metadata
          mdd.erase(mdd.begin());
          mdco.erase(mdco.begin());
          mdcy.erase(mdcy.begin());
@@ -943,9 +943,9 @@ void shortestJobFirst(vector<string>& mdd, vector<char>& mdco, vector<int>& mdcy
       
       // get number of processes in metadata file
       numProcesses = 0;
-      for(int i = 0; i < mdd.size(); i++)
+      for(int b = 0; b < mdd.size(); b++)
       {
-         if(mdco[i] == 'A' && mdd[i] == "start" && mdcy[i] == 0)
+         if(mdco[b] == 'A' && mdd[b] == "start" && mdcy[b] == 0)
          {
             processNumber.push_back(numProcesses);
             numProcesses++;
@@ -953,45 +953,55 @@ void shortestJobFirst(vector<string>& mdd, vector<char>& mdco, vector<int>& mdcy
       }
       
       // get number of tasks and indices for each process in metadata file
-      for(int i = 0; i < mdd.size(); i++)
+      for(int c = 0; c < mdd.size(); c++)
       {
-         if(mdco[i] == 'A' && mdd[i] == "start" && mdcy[i] == 0)
+         // if metadata is A(start)0 start indexing
+         if(mdco[c] == 'A' && mdd[c] == "start" && mdcy[c] == 0)
          {
-            startingIndex.push_back(i);
-            numTasks = 0;
-            j = i + 1;
+            startingIndex.push_back(c);
+            int numTasks = 0;
+            int d = c + 1;
             
-            while(mdco[j] != 'A' && mdd[j] != "end" && mdcy[j] != 0)
+            // while metadata is not A(end)0 keep indexing
+            while(mdco[d] != 'A' && mdd[d] != "end" && mdcy[d] != 0)
             {
                numTasks++;
-               j++;
+               d++;
             }
+            // end indexing
             tasksPerProcess.push_back(numTasks);
-            endingIndex.push_back(j);
+            endingIndex.push_back(d);
          }
       }
       
-      // find shortest job
+      // assign arbitrary shortest job
       shortestJob = processNumber[0];
-      for(int k = 0; k < tasksPerProcess.size(); k++)
+      
+      // loop through metadata to determine shortest job
+      for(int e = 0; e < tasksPerProcess.size(); e++)
       {
-         if(tasksPerProcess[k] < tasksPerProcess[k - 1])
+         // if current process is shorter than previous process
+         if(tasksPerProcess[e] < tasksPerProcess[e - 1])
          {
-            shortestJob = processNumber[k];
+            // set shortest job
+            shortestJob = processNumber[e];
          }
       }
       
-      for(int j = startingIndex[shortestJob]; j <= endingIndex[shortestJob]; j++)
+      // added current shortest process to new metadata vectors
+      for(int f = startingIndex[shortestJob]; f <= endingIndex[shortestJob]; f++)
       {
-         newmdco.push_back(mdco[j]);
-         newmdd.push_back(mdd[j]);
-         newmdcy.push_back(mdcy[j]);
+         newmdco.push_back(mdco[f]);
+         newmdd.push_back(mdd[f]);
+         newmdcy.push_back(mdcy[f]);
       }
       
+      // erase loaded metadata
       mdd.erase(mdd.begin() + startingIndex[shortestJob], mdd.begin() + (endingIndex[shortestJob] + 1));
       mdco.erase(mdco.begin() + startingIndex[shortestJob], mdco.begin() + (endingIndex[shortestJob] + 1));
       mdcy.erase(mdcy.begin() + startingIndex[shortestJob], mdcy.begin() + (endingIndex[shortestJob] + 1));
       
+      // if last iteration add S(end)0
       if(mdd.size() == 1)
       {
          newmdco.push_back(mdco[0]);
@@ -999,36 +1009,10 @@ void shortestJobFirst(vector<string>& mdd, vector<char>& mdco, vector<int>& mdcy
          newmdcy.push_back(mdcy[0]);
       }
       
+      // reset temp storage vectors
       processNumber.clear();
       tasksPerProcess.clear();
       startingIndex.clear();
       endingIndex.clear();
    }
 }
-
-// SJF DEBUGGING LINES
-
-// // debugging
-// cout << "Current Shortest Job(Process): " << processNumber[shortestJob] << endl;
-// getchar();
-
-// // debugging
-// cout << "Starting Index of Current Shortest Job(Process): " << startingIndex[shortestJob] << endl;
-// cout << "Ending Index of Current Shortest Job(Process): " << endingIndex[shortestJob] << endl;
-// getchar();
-
-// // debugging
-// for(int i = 0; i < newmdd.size(); i++)
-// {
-//    cout << newmdco[i] << LEFT_PARENTHESE
-//         << newmdd[i] << RIGHT_PARENTHESE
-//         << newmdcy[i] << endl;
-// }
-
-// // debugging
-// for(int i = 0; i < mdd.size(); i++)
-// {
-//    cout << mdco[i] << LEFT_PARENTHESE
-//         << mdd[i] << RIGHT_PARENTHESE
-//         << mdcy[i] << endl;
-// }
