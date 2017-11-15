@@ -459,17 +459,6 @@ void priorityScheduling(vector<string>& mdd, vector<char>& mdco, vector<int>& md
          }
       }
       
-      // // debugging
-      // cout << ioTasksPerProcess.size() << endl;
-      // getchar();
-      // 
-      // // debugging
-      // for(int i = 0; i < ioTasksPerProcess.size(); i++)
-      // {
-      //    cout << ioTasksPerProcess[i] << endl;
-      // }
-      // getchar();
-      
       // assign arbitrary shortest job
       priorityJob = processNumber[0];
       
@@ -483,13 +472,6 @@ void priorityScheduling(vector<string>& mdd, vector<char>& mdco, vector<int>& md
             priorityJob = processNumber[e];
          }
       }
-      
-      // cout << "Priority Job: " << priorityJob << endl;
-      // getchar();
-      // 
-      // // debugging
-      // cout << "Process Number: " << processNumber[priorityJob] << endl;
-      // getchar();
       
       // added current shortest process to new metadata vectors
       for(int f = startingIndex[priorityJob]; f <= endingIndex[priorityJob]; f++)
