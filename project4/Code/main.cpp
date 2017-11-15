@@ -35,6 +35,8 @@ int main(int argc, const char *argv[])
    int hardDriveCounter = 0, printerCounter = 0;
    
    int processorQuantumNumber;
+   
+   int processNumber = 0;
 
    // struct object
    PCB PCBmain;
@@ -92,7 +94,6 @@ int main(int argc, const char *argv[])
          // start time point
          t1 = chrono::high_resolution_clock::now();
          
-         int processNumber = 0;
          for(int i = 0; i < count; i++)
          {
             if(newMetadataCodes[i] == 'A' && newMetadataDescriptors[i] == "start" && newMetadataCycles[i] == 0)
@@ -113,7 +114,6 @@ int main(int argc, const char *argv[])
          // start time point
          t1 = chrono::high_resolution_clock::now();
          
-         int processNumber = 0;
          for(int i = 0; i < count; i++)
          {
             if(newMetadataCodes[i] == 'A' && newMetadataDescriptors[i] == "start" && newMetadataCycles[i] == 0)
