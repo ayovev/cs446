@@ -33,18 +33,14 @@ int main(int argc, const char *argv[])
    int systemMemory, memoryBlockSize, count = 0, logType = 2;
    int speakerQuantity, printerQuantity, multiplier = 0;
    int speakerCounter = 0, printerCounter = 0;
-   
    int processorQuantumNumber;
-   
    int processNumber = 0;
 
    // struct object
    PCB PCBmain;
 
-   // semaphore object
+   // instantiate and initialize semaphore object
    sem_t semaphore;
-
-   // initialize semaphore
    sem_init(&semaphore, 0, 1);
 
    // timing variables
@@ -133,7 +129,25 @@ int main(int argc, const char *argv[])
       }
       else if(schedulingCode == "PS")
       {
-         // call priority scheduling function
+         // setup new metadata vectors with PS order
+         priorityScheduling(metadataDescriptors, metadataCodes, metadataCycles,
+                            newMetadataDescriptors, newMetadataCodes, newMetadataCycles);
+                            
+         // start time point
+         t1 = chrono::high_resolution_clock::now();
+         
+         for(int i = 0; i < count; i++)
+         {
+            if(newMetadataCodes[i] == 'A' && newMetadataDescriptors[i] == "start" && newMetadataCycles[i] == 0)
+            {
+               processNumber++;
+            }
+            // process and log with new metadata vectors
+            processAndLog(cycleTimes, newMetadataDescriptors, newMetadataCodes, newMetadataCycles,
+                          logType, systemMemory, i, t1, t2, time_span, fout, PCBmain,
+                          memoryBlockSize, multiplier, semaphore, speakerQuantity, printerQuantity,
+                          speakerCounter, printerCounter, processNumber);
+         }
       }
       else
       {
