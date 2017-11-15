@@ -94,12 +94,14 @@ int main(int argc, const char *argv[])
          // start time point
          t1 = chrono::high_resolution_clock::now();
          
+         // keep track of the process number
          for(int i = 0; i < count; i++)
          {
             if(newMetadataCodes[i] == 'A' && newMetadataDescriptors[i] == "start" && newMetadataCycles[i] == 0)
             {
                processNumber++;
             }
+            // process and log metadata vectors
             processAndLog(cycleTimes, metadataDescriptors, metadataCodes, metadataCycles,
                           logType, systemMemory, i, t1, t2, time_span, fout, PCBmain,
                           memoryBlockSize, multiplier, semaphore, hardDriveQuantity, printerQuantity,
@@ -108,18 +110,21 @@ int main(int argc, const char *argv[])
       }
       else if(schedulingCode == "SJF")
       {
+         // setup new metadata vectors with SJF order
          shortestJobFirst(metadataDescriptors, metadataCodes, metadataCycles, count,
                           newMetadataDescriptors, newMetadataCodes, newMetadataCycles);
          
          // start time point
          t1 = chrono::high_resolution_clock::now();
          
+         // keep track of the process number
          for(int i = 0; i < count; i++)
          {
             if(newMetadataCodes[i] == 'A' && newMetadataDescriptors[i] == "start" && newMetadataCycles[i] == 0)
             {
                processNumber++;
             }
+            // process and log with new metadata vectors
             processAndLog(cycleTimes, newMetadataDescriptors, newMetadataCodes, newMetadataCycles,
                           logType, systemMemory, i, t1, t2, time_span, fout, PCBmain,
                           memoryBlockSize, multiplier, semaphore, hardDriveQuantity, printerQuantity,
