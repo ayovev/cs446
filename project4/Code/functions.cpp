@@ -400,8 +400,8 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
                    const int sm, const int i,
                    high_resolution_clock::time_point t1, high_resolution_clock::time_point t2,
                    duration<double> time_span, ofstream& fout, PCB PCBmain,
-                   const int mbs, int& mult, sem_t semaphore, const int hdq, const int pq,
-                   int& hdc, int& pc, int& processNumber)
+                   const int mbs, int& mult, sem_t semaphore, const int sq, const int pq,
+                   int& sc, int& pc, int& processNumber)
 {
    printTime(t1, t2, time_span, lt, fout);
 
@@ -647,15 +647,19 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
                   }
                   if(mdd[i] == "hard drive")
                   {
-                     cout << " output on ";
-                     cout << "HDD " << hdc % hdq;
-                     hdc++;
+                     cout << " output";
                   }
                   if(mdd[i] == "printer")
                   {
                      cout << " output on ";
                      cout << "PRNTR " << pc % pq;
                      pc++;
+                  }
+                  if(mdd[i] == "speaker")
+                  {
+                     cout << " output on ";
+                     cout << "SPKR " << sc % sq;
+                     sc++;
                   }
                   cout << endl;
                }
@@ -667,13 +671,19 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
                   }
                   if(mdd[i] == "hard drive")
                   {
-                     fout << " output on ";
-                     fout << "HDD " << hdc % hdq;
+                     fout << " output";
                   }
                   if(mdd[i] == "printer")
                   {
                      fout << " output on ";
                      fout << "PRNTR " << pc % pq;
+                     pc++;
+                  }
+                  if(mdd[i] == "speaker")
+                  {
+                     fout << " output on ";
+                     fout << "SPKR " << sc % sq;
+                     sc++;
                   }
                   fout << endl;
                }
@@ -688,9 +698,7 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
                   }
                   if(mdd[i] == "hard drive")
                   {
-                     cout << " input on ";
-                     cout << "HDD " << hdc % hdq;
-                     hdc++;
+                     cout << " input ";
                   }
                   if(mdd[i] == "printer")
                   {
@@ -708,13 +716,13 @@ void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<cha
                   }
                   if(mdd[i] == "hard drive")
                   {
-                     fout << " input on ";
-                     fout << "HDD " << hdc % hdq;
+                     fout << " input ";
                   }
                   if(mdd[i] == "printer")
                   {
                      fout << " input on ";
                      fout << "PRNTR " << pc % pq;
+                     pc++;
                   }
                   fout << endl;
                }
