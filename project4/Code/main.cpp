@@ -93,7 +93,7 @@ int main(int argc, const char *argv[])
          // keep track of the process number
          for(int i = 0; i < count; i++)
          {
-            if(newMetadataCodes[i] == 'A' && newMetadataDescriptors[i] == "start" && newMetadataCycles[i] == 0)
+            if(metadataCodes[i] == 'A' && metadataDescriptors[i] == "start" && metadataCycles[i] == 0)
             {
                processNumber++;
             }
