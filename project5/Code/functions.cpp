@@ -1010,6 +1010,64 @@ void readMetadataFile(ifstream& fin, vector<string>& mdd, vector<char>& mdc,
    }
 }
 
+void roundRobin(vector<string>& mdd, vector<char>& mdco, vector<int>& mdcy,
+                vector<string>& newmdd, vector<char>& newmdco, vector<int>& newmdcy)
+{
+   // declare variables
+   int numProcesses = 0;
+   vector<int> processNumber, tasksPerProcess, startingIndex, endingIndex;
+   
+   // get number of processes in metadata file
+   numProcesses = 0;
+   for(int i = 0; i < mdd.size(); i++)
+   {
+      // check if current piece of metadata is A(start)0
+      if(mdco[i] == 'A' && mdd[i] == "start" && mdcy[i] == 0)
+      {
+         // increment number of processes
+         numProcesses++;
+      }
+   }
+   int outer = numProcesses;
+   
+   // loop for the number of processes
+   for(int a = 0; a < outer; a++)
+   {      
+      // get number of processes in metadata file
+      numProcesses = 0;
+      for(int b = 0; b < mdd.size(); b++)
+      {
+         if(mdco[b] == 'A' && mdd[b] == "start" && mdcy[b] == 0)
+         {
+            processNumber.push_back(numProcesses);
+            numProcesses++;
+         }
+      }
+      
+      // get number of tasks and indices for each process in metadata file
+      for(int c = 0; c < mdd.size(); c++)
+      {
+         // if metadata is A(start)0 start indexing
+         if(mdco[c] == 'A' && mdd[c] == "start" && mdcy[c] == 0)
+         {
+            startingIndex.push_back(c);
+            int numTasks = 0;
+            int d = c + 1;
+            
+            // while metadata is not A(end)0 keep indexing
+            while(mdco[d] != 'A' && mdd[d] != "end" && mdcy[d] != 0)
+            {
+               numTasks++;
+               d++;
+            }
+            // end indexing
+            tasksPerProcess.push_back(numTasks);
+            endingIndex.push_back(d);
+         }
+      }
+   }
+}
+
 // threading runner function
 void* runner(void* total)
 {
@@ -1128,5 +1186,63 @@ void shortestJobFirst(vector<string>& mdd, vector<char>& mdco, vector<int>& mdcy
       tasksPerProcess.clear();
       startingIndex.clear();
       endingIndex.clear();
+   }
+}
+
+void shortestTimeRemaining(vector<string>& mdd, vector<char>& mdco, vector<int>& mdcy,
+                           vector<string>& newmdd, vector<char>& newmdco, vector<int>& newmdcy)
+{
+   // declare variables
+   int numProcesses = 0;
+   vector<int> processNumber, tasksPerProcess, startingIndex, endingIndex;
+   
+   // get number of processes in metadata file
+   numProcesses = 0;
+   for(int i = 0; i < mdd.size(); i++)
+   {
+      // check if current piece of metadata is A(start)0
+      if(mdco[i] == 'A' && mdd[i] == "start" && mdcy[i] == 0)
+      {
+         // increment number of processes
+         numProcesses++;
+      }
+   }
+   int outer = numProcesses;
+   
+   // loop for the number of processes
+   for(int a = 0; a < outer; a++)
+   {      
+      // get number of processes in metadata file
+      numProcesses = 0;
+      for(int b = 0; b < mdd.size(); b++)
+      {
+         if(mdco[b] == 'A' && mdd[b] == "start" && mdcy[b] == 0)
+         {
+            processNumber.push_back(numProcesses);
+            numProcesses++;
+         }
+      }
+      
+      // get number of tasks and indices for each process in metadata file
+      for(int c = 0; c < mdd.size(); c++)
+      {
+         // if metadata is A(start)0 start indexing
+         if(mdco[c] == 'A' && mdd[c] == "start" && mdcy[c] == 0)
+         {
+            startingIndex.push_back(c);
+            int numTasks = 0;
+            int d = c + 1;
+            
+            // while metadata is not A(end)0 keep indexing
+            while(mdco[d] != 'A' && mdd[d] != "end" && mdcy[d] != 0)
+            {
+               numTasks++;
+               d++;
+            }
+            // end indexing
+            tasksPerProcess.push_back(numTasks);
+            endingIndex.push_back(d);
+         }
+      }
    }
 }

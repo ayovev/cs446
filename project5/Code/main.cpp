@@ -149,6 +149,48 @@ int main(int argc, const char *argv[])
                           speakerCounter, printerCounter, processNumber);
          }
       }
+      else if(schedulingCode == "RR")
+      {
+         roundRobin(metadataDescriptors, metadataCodes, metadataCycles,
+                    newMetadataDescriptors, newMetadataCodes, newMetadataCycles);
+         
+         // start time point
+         t1 = chrono::high_resolution_clock::now();
+         
+         for(int i = 0; i < count; i++)
+         {
+            if(metadataCodes[i] == 'A' && metadataDescriptors[i] == "start" && metadataCycles[i] == 0)
+            {
+               processNumber++;
+            }
+            // process and log with new metadata vectors
+            processAndLog(cycleTimes, metadataDescriptors, metadataCodes, metadataCycles,
+                          logType, systemMemory, i, t1, t2, time_span, fout, PCBmain,
+                          memoryBlockSize, multiplier, semaphore, speakerQuantity, printerQuantity,
+                          speakerCounter, printerCounter, processNumber);
+         }
+      }
+      else if(schedulingCode == "STR")
+      {
+         shortestTimeRemaining(metadataDescriptors, metadataCodes, metadataCycles,
+                               newMetadataDescriptors, newMetadataCodes, newMetadataCycles);
+         
+         // start time point
+         t1 = chrono::high_resolution_clock::now();
+         
+         for(int i = 0; i < count; i++)
+         {
+            if(metadataCodes[i] == 'A' && metadataDescriptors[i] == "start" && metadataCycles[i] == 0)
+            {
+               processNumber++;
+            }
+            // process and log with new metadata vectors
+            processAndLog(cycleTimes, metadataDescriptors, metadataCodes, metadataCycles,
+                          logType, systemMemory, i, t1, t2, time_span, fout, PCBmain,
+                          memoryBlockSize, multiplier, semaphore, speakerQuantity, printerQuantity,
+                          speakerCounter, printerCounter, processNumber);
+         }
+      }
       else
       {
          // throw an error

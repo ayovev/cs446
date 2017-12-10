@@ -48,6 +48,10 @@ void readOneMeta(ifstream& fin, vector<string>& mdd, vector<char>& mdc,
                  vector<int>& cycles);
 void readMetadataFile(ifstream& fin, vector<string>& mdd, vector<char>& mdc,
                       vector<int>& cycles, int& count);
+void roundRobin(vector<string>& mdd, vector<char>& mdco, vector<int>& mdcy,
+                vector<string>& newmdd, vector<char>& newmdco, vector<int>& newmdcy);
 void* runner(void* total);
 void shortestJobFirst(vector<string>& mdd, vector<char>& mdco, vector<int>& mdcy,
                       vector<string>& newmdd, vector<char>& newmdco, vector<int>& newmdcy);
+void shortestTimeRemaining(vector<string>& mdd, vector<char>& mdco, vector<int>& mdcy,
+                           vector<string>& newmdd, vector<char>& newmdco, vector<int>& newmdcy);
