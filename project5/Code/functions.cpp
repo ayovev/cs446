@@ -992,8 +992,7 @@ void readOneMeta(ifstream& fin, vector<string>& mdd, vector<char>& mdc,
 }
 
 // uses a modular function to read the entire metadata file
-void readMetadataFile(ifstream& fin, vector<string>& mdd, vector<char>& mdc,
-                      vector<int>& cycles, int& count)
+void readMetadataFile(ifstream& fin, vector<string>& mdd, vector<char>& mdc, vector<int>& cycles, int& count)
 {
    // declare variables
    char c;

@@ -13,55 +13,58 @@ NONE
 functions.cpp
 -------------
 
-Line 36: int calculateCycleTime(map<string, int>& cycleTimes, vector<string>& mdd,
-                       		vector<int>& mdc, const int index)
-	 calculate the metadata metrics by "mapping" metadata descriptors to their
-	 corresponding components
+Line 36: calculateCycleTime
 
-Line 82: double calculateSleepTime(map<string, int>& cycleTimes, vector<string>& mdd,
-                    		   vector<int>& mdc, const int index)
-	 calculate the value for sleep / wait function
+	      calculate the metadata metrics by "mapping" metadata descriptors to their
+	      corresponding components
 
-Line 180: void getComponentCycleTimes(ifstream& fin, map<string, int>& cycleTimes)
+Line 82: calculateSleepTime
+
+         calculate the value for sleep / wait function
+
+Line 180: getComponentCycleTimes
+
           gets the various component cycle times from the configuration file
           
-Line 215: int calculateTime(map<string, int>& cycleTimes, vector<string>& mdd, 
-                            vector<int>& mdc, int index)
+Line 215: calculateTime
+
           calculate the metadata metrics by "mapping" metadata descriptors to their
           corresponding components
           
-Line 356: int handleErrors(int e)
+Line 356: handleErrors
+
           handles all errors given the error code by displaying a corresponding
           message and terminates the program after logging
+          
+Line 372: printTime
 
-Line 390: void priorityScheduling(vector<string>& mdd, vector<char>& mdco, vector<int>& mdcy,
-                        	  vector<string>& newmdd, vector<char>& newmdco, vector<int>& newmdcy)
-	  sets up vector compliant with the priority scheduling algorithm
+	       output duration between two points for timestamp
 
-Line 412: void printTime(high_resolution_clock::time_point t1,
-               	  	 high_resolution_clock::time_point t2,
-               		 duration<double> time_span, const int lt, ofstream& fout)
-	  output duration between two points for timestamp
+Line 390: priorityScheduling
 
-Line 432: void processAndLog(map<string, int>& cycleTimes, vector<string>& mdd, vector<char>& mdco,
-                   	     vector<int>& mdcy, const string lfp, const int lt,
-                   	     const int count, const int sm, const int i,
-                   	     high_resolution_clock::time_point t1, high_resolution_clock::time_point t2,
-                   	     duration<double> time_span, ofstream& fout, PCB PCBmain,
-                   	     const int mbs, int& mult, sem_t semaphore, const int hdq, const int pq,
-                   	     int& hdc, int& pc)
-	  logs all data to the appropriate location in the prescribed format,
-	  changes PCB process state, and deals with multithreading and semaphore locks
+	       sets up vector compliant with the priority scheduling algorithm
 
-Line 810: void readConfigurationFile(ifstream& fin, map<string, int>& cycleTimes,
-                           	     string& mdfp, string& lfp, int& lt, int& sm, string& units,
-                           	     int& mbs, int& hdq, int& pq)
+Line 508: processAndLog
+
+          logs all data to the appropriate location in the prescribed format,
+          changes PCB process state, and deals with multithreading and semaphore locks
+
+Line 892: readConfigurationFile
+
           uses modular functions to read the entire configuration file
 
-Line 897: void readMetadataFile(ifstream& fin, vector<string>& mdd, vector<char>& mdc, 
-                                vector<int>& cycles, int& count)
-          uses a modular function to read the entire metadata file
+Line 995: readMetadataFile
 
-Line 1021: void shortestJobFirst(vector<string>& mdd, vector<char>& mdco, vector<int>& mdcy,
-                      		 vector<string>& newmdd, vector<char>& newmdco, vector<int>& newmdcy)
-	   sets up vector compliant with the shortest job first scheduling algorithm
+          uses a modular function to read the entire metadata file
+          
+Line 1012: roundRobin
+
+           sets up vector compliant with the round robin algorithm
+
+Line 1021: shortestJobFirst
+
+           sets up vector compliant with the shortest job first scheduling algorithm
+           
+Line 1191: shortestTimeRemaining
+
+           sets up vector compliant with the shortest time remining scheduling algorithm
